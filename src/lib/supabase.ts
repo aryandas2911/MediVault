@@ -81,6 +81,45 @@ export const updateMedicalRecord = async (id: string, record: Partial<MedicalRec
   return data
 }
 
+// Dashboard statistics
+export const getDashboardStats = async (userId: string) => {
+  const { data: records, error } = await supabase
+    .from('medical_records')
+    .select('*')
+    .eq('user_id', userId)
+  
+  if (error) throw error
+
+  const today = new Date()
+  const sevenDaysFromNow = new Date(today)
+  sevenDaysFromNow.setDate(today.getDate() + 7)
+
+  return {
+    totalRecords: records.length,
+    emergencyRecords: records.filter(r => r.is_emergency).length,
+    upcomingConsultations: records.filter(r => {
+      const consultDate = new Date(r.consultation_date)
+      return consultDate >= today && consultDate <= sevenDaysFromNow
+    }).length,
+    lastUpdated: records.length > 0 
+      ? new Date(Math.max(...records.map(r => new Date(r.updated_at).getTime()))).toISOString()
+      : null
+  }
+}
+
+// Recent activity
+export const getRecentActivity = async (userId: string, limit = 5) => {
+  const { data, error } = await supabase
+    .from('medical_records')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  
+  if (error) throw error
+  return data as MedicalRecord[]
+}
+
 // File upload
 export const uploadFile = async (file: File, userId: string) => {
   const fileExt = file.name.split('.').pop()
