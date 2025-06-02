@@ -3,6 +3,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import AddRecord from './pages/AddRecord'
+import EditRecord from './pages/EditRecord'
 import Records from './pages/Records'
 import { AuthProvider, useAuth } from './context/AuthContext'
 
@@ -54,6 +55,14 @@ export default function App() {
             }
           />
           <Route
+            path="/edit-record/:id"
+            element={
+              <PrivateRoute>
+                <EditRecord />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/records"
             element={
               <PrivateRoute>
@@ -77,7 +86,7 @@ export default function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/login\" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -52,6 +52,29 @@ export const getMedicalRecords = async (userId: string) => {
   return data as MedicalRecord[]
 }
 
+export const getMedicalRecord = async (id: string) => {
+  const { data, error } = await supabase
+    .from('medical_records')
+    .select('*')
+    .eq('id', id)
+    .single()
+  
+  if (error) throw error
+  return data as MedicalRecord
+}
+
+export const updateMedicalRecord = async (id: string, record: Partial<MedicalRecord>) => {
+  const { data, error } = await supabase
+    .from('medical_records')
+    .update(record)
+    .eq('id', id)
+    .select()
+    .single()
+  
+  if (error) throw error
+  return data
+}
+
 // File upload
 export const uploadFile = async (file: File, userId: string) => {
   const fileExt = file.name.split('.').pop()
