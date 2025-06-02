@@ -4,10 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { 
   AlertTriangle, FileText, Pencil, Search,
-  Filter, Calendar, ChevronRight, PlusCircle
+  Filter, Calendar, ChevronRight, PlusCircle,
+  Trash2
 } from 'lucide-react'
+import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
-import { getMedicalRecords } from '../lib/supabase'
+import { getMedicalRecords, deleteMedicalRecord, deleteFile } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import type { MedicalRecord, MedicalRecordType } from '../types/database'
 
@@ -35,6 +37,7 @@ export default function Records() {
   const [records, setRecords] = useState<MedicalRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('')
@@ -76,6 +79,22 @@ export default function Records() {
     }
   }
 
+  const handleDelete = async (record: MedicalRecord) => {
+    try {
+      await deleteMedicalRecord(record.id)
+      if (record.file_url) {
+        await deleteFile(record.file_url)
+      }
+      setRecords(prev => prev.filter(r => r.id !== record.id))
+      toast.success('Record deleted successfully')
+    } catch (error) {
+      toast.error('Failed to delete record')
+      console.error(error)
+    } finally {
+      setDeleteConfirm(null)
+    }
+  }
+
   const filteredRecords = records.filter(record => {
     const matchesSearch = searchQuery === '' || 
       record.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -92,14 +111,14 @@ export default function Records() {
     return matchesSearch && matchesType && matchesDate && matchesEmergency
   })
 
-  const getTypeColor = (type: MedicalRecordType) => {
+  const getTypeColor = (type: string) => {
     const colors = {
       prescription: 'bg-blue-100 text-blue-800',
       allergy: 'bg-red-100 text-red-800',
       condition: 'bg-purple-100 text-purple-800',
       report: 'bg-green-100 text-green-800'
     }
-    return colors[type]
+    return colors[type as keyof typeof colors]
   }
 
   return (
@@ -271,7 +290,7 @@ export default function Records() {
         ) : (
           <AnimatePresence>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredRecords.map((record, index) => (
+              {filteredRecords.map((record) => (
                 <FadeInWhenVisible key={record.id}>
                   <motion.div 
                     className="card hover:shadow-lg transition-all duration-300"
@@ -308,29 +327,61 @@ export default function Records() {
                       )}
                     </div>
 
-                    <div className="flex space-x-4">
-                      {record.file_url && (
-                        <motion.a
-                          href={record.file_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center text-primary hover:text-primary/90"
+                    <div className="flex items-center justify-between">
+                      <div className="flex space-x-4">
+                        {record.file_url && (
+                          <motion.a
+                            href={record.file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center text-primary hover:text-primary/90"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <FileText className="w-4 h-4 mr-1" />
+                            View File
+                          </motion.a>
+                        )}
+                        <motion.button
+                          onClick={() => navigate(`/edit-record/${record.id}`)}
+                          className="flex items-center text-gray-600 hover:text-gray-900"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                         >
-                          <FileText className="w-4 h-4 mr-1" />
-                          View File
-                        </motion.a>
+                          <Pencil className="w-4 h-4 mr-1" />
+                          Edit
+                        </motion.button>
+                      </div>
+                      
+                      {deleteConfirm === record.id ? (
+                        <div className="flex items-center space-x-2">
+                          <motion.button
+                            onClick={() => handleDelete(record)}
+                            className="text-red-600 hover:text-red-700 text-sm font-medium"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            Confirm
+                          </motion.button>
+                          <motion.button
+                            onClick={() => setDeleteConfirm(null)}
+                            className="text-gray-600 hover:text-gray-700 text-sm font-medium"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            Cancel
+                          </motion.button>
+                        </div>
+                      ) : (
+                        <motion.button
+                          onClick={() => setDeleteConfirm(record.id)}
+                          className="flex items-center text-red-600 hover:text-red-700"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </motion.button>
                       )}
-                      <motion.button
-                        onClick={() => navigate(`/edit-record/${record.id}`)}
-                        className="flex items-center text-gray-600 hover:text-gray-900"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <Pencil className="w-4 h-4 mr-1" />
-                        Edit
-                      </motion.button>
                     </div>
                   </motion.div>
                 </FadeInWhenVisible>
