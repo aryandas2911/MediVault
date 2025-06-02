@@ -14,7 +14,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return !session ? children : <Navigate to="/dashboard" replace />
 }
 
-function App() {
+export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -75,7 +75,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/login\" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
