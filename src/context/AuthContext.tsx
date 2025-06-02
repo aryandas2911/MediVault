@@ -3,10 +3,12 @@ import { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { createUserProfile, getUserProfile } from '../lib/supabase'
 import type { User } from '../types/database'
+import toast from 'react-hot-toast'
 
 interface AuthContextType {
   session: Session | null
   userProfile: User | null
+  loading: boolean
   signUp: (email: string, password: string, fullName: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -17,16 +19,15 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [userProfile, setUserProfile] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
   const handleSession = async (currentSession: Session | null) => {
     setSession(currentSession)
     
     if (currentSession?.user) {
       try {
-        // Try to get existing profile
         let profile = await getUserProfile(currentSession.user.id)
         
-        // If profile doesn't exist, create it
         if (!profile) {
           profile = await createUserProfile({
             id: currentSession.user.id,
@@ -43,15 +44,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setUserProfile(null)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
-    // Handle initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       handleSession(session)
     })
 
-    // Handle auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -69,7 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       if (error) throw error
 
-      // Create user profile after successful authentication signup
       if (data.user) {
         const profile = await createUserProfile({
           id: data.user.id,
@@ -77,28 +76,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           full_name: fullName
         })
         setUserProfile(profile)
+        toast.success('Account created successfully!')
       }
     } catch (error) {
+      toast.error('Failed to create account')
       throw error
     }
   }
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    if (error) throw error
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (error) throw error
+      toast.success('Welcome back!')
+    } catch (error) {
+      toast.error('Invalid login credentials')
+      throw error
+    }
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-    setUserProfile(null)
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      setUserProfile(null)
+      toast.success('Logged out successfully')
+    } catch (error) {
+      toast.error('Failed to log out')
+      throw error
+    }
   }
 
   return (
-    <AuthContext.Provider value={{ session, userProfile, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, userProfile, loading, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )
