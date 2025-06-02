@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.user) {
         await createUserProfile({
           id: data.user.id,
-          email: data.user.email,
+          email: data.user.email!,
           full_name: fullName
         })
       }

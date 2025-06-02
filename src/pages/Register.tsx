@@ -6,6 +6,7 @@ import { UserPlus } from 'lucide-react'
 export default function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [fullName, setFullName] = useState('')
   const [error, setError] = useState('')
   const { signUp } = useAuth()
   const navigate = useNavigate()
@@ -13,7 +14,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await signUp(email, password)
+      await signUp(email, password, fullName)
       navigate('/dashboard')
     } catch (error) {
       setError('Error creating account')
@@ -40,6 +41,22 @@ export default function Register() {
           )}
           
           <div className="space-y-4">
+            <div>
+              <label htmlFor="fullName" className="sr-only">
+                Full Name
+              </label>
+              <input
+                id="fullName"
+                name="fullName"
+                type="text"
+                required
+                className="input-field"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+            </div>
+            
             <div>
               <label htmlFor="email" className="sr-only">
                 Email address
