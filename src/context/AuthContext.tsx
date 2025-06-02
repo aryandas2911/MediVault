@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { createUserProfile } from '../lib/supabase'
 
 interface AuthContextType {
   session: Session | null
-  signUp: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string, fullName: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
@@ -28,12 +29,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-    if (error) throw error
+  const signUp = async (email: string, password: string, fullName: string) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+      if (error) throw error
+
+      // Create user profile after successful authentication signup
+      if (data.user) {
+        await createUserProfile({
+          id: data.user.id,
+          email: data.user.email,
+          full_name: fullName
+        })
+      }
+    } catch (error) {
+      throw error
+    }
   }
 
   const signIn = async (email: string, password: string) => {
