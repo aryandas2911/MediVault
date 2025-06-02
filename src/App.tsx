@@ -76,7 +76,7 @@ export default function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/login\" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
