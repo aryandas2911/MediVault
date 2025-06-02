@@ -23,10 +23,10 @@ export const getUserProfile = async (userId: string) => {
     .from('users')
     .select('*')
     .eq('id', userId)
-    .single()
+    .limit(1)
   
   if (error) throw error
-  return data as User
+  return data?.[0] || null
 }
 
 // Medical record operations
