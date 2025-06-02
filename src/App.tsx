@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import AddRecord from './pages/AddRecord'
 import { AuthProvider, useAuth } from './context/AuthContext'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -47,7 +48,7 @@ export default function App() {
             path="/add-record"
             element={
               <PrivateRoute>
-                <div>Add Record Page (Coming Soon)</div>
+                <AddRecord />
               </PrivateRoute>
             }
           />
@@ -75,7 +76,7 @@ export default function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/login\" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
