@@ -6,6 +6,7 @@ import AddRecord from './pages/AddRecord'
 import EditRecord from './pages/EditRecord'
 import Records from './pages/Records'
 import Share from './pages/Share'
+import SharedRecords from './pages/SharedRecords'
 import { AuthProvider, useAuth } from './context/AuthContext'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -80,6 +81,10 @@ export default function App() {
             }
           />
           <Route
+            path="/shared/:id"
+            element={<SharedRecords />}
+          />
+          <Route
             path="/about"
             element={
               <PrivateRoute>
@@ -87,7 +92,7 @@ export default function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/login\" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
