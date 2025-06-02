@@ -81,6 +81,15 @@ export const updateMedicalRecord = async (id: string, record: Partial<MedicalRec
   return data
 }
 
+export const deleteMedicalRecord = async (id: string) => {
+  const { error } = await supabase
+    .from('medical_records')
+    .delete()
+    .eq('id', id)
+  
+  if (error) throw error
+}
+
 // Dashboard statistics
 export const getDashboardStats = async (userId: string) => {
   const { data: records, error } = await supabase
@@ -136,4 +145,16 @@ export const uploadFile = async (file: File, userId: string) => {
     .getPublicUrl(fileName)
   
   return publicUrl
+}
+
+// Delete file from storage
+export const deleteFile = async (fileUrl: string) => {
+  const fileName = fileUrl.split('/').pop()
+  if (!fileName) return
+
+  const { error } = await supabase.storage
+    .from('medical_files')
+    .remove([fileName])
+  
+  if (error) throw error
 }
