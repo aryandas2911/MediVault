@@ -1,15 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import {
-  FileText,
-  QrCode,
-  CloudCheck,
-  Shield,
-  Share2,
-  Clock,
-  ChevronRight
-} from 'lucide-react'
+import { FileText, QrCode, CloudCog as CloudCheck, Shield, Share2, Clock, ChevronRight } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import PageTransition from '../components/PageTransition'
 
