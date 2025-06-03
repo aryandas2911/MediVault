@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AnimatePresence } from 'framer-motion'
+import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -51,6 +52,14 @@ export default function App() {
         />
         <AnimatePresence mode="wait">
           <Routes>
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <Landing />
+                </PublicRoute>
+              }
+            />
             <Route
               path="/login"
               element={
@@ -127,7 +136,6 @@ export default function App() {
                 </PrivateRoute>
               }
             />
-            <Route path="/" element={<Navigate to="/login\" replace />} />
           </Routes>
         </AnimatePresence>
       </BrowserRouter>
