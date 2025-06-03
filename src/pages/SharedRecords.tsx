@@ -1,8 +1,42 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { AlertTriangle, FileText } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  AlertTriangle, FileText, Download, Clock,
+  Hospital, User, Calendar, Shield, Info
+} from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
+
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#F0F4FF] to-white flex items-center justify-center">
+      <motion.div
+        className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+      />
+    </div>
+  )
+}
+
+function ErrorState({ message }: { message: string }) {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#F0F4FF] to-white p-8 flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center"
+      >
+        <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Access Error
+        </h2>
+        <p className="text-gray-600">{message}</p>
+      </motion.div>
+    </div>
+  )
+}
 
 export default function SharedRecords() {
   const { id } = useParams<{ id: string }>()
@@ -44,83 +78,160 @@ export default function SharedRecords() {
     return colors[type as keyof typeof colors]
   }
 
+  const getTypeGradient = (type: string) => {
+    const gradients = {
+      prescription: 'from-blue-50 to-blue-100/50',
+      allergy: 'from-red-50 to-red-100/50',
+      condition: 'from-purple-50 to-purple-100/50',
+      report: 'from-green-50 to-green-100/50'
+    }
+    return gradients[type as keyof typeof gradients]
+  }
+
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-[#F0F4FF] to-white p-8">
-        <div className="text-center">Loading...</div>
-      </div>
-    )
+    return <LoadingSpinner />
   }
 
   if (error || records.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#F0F4FF] to-white p-8">
-        <div className="text-center text-red-500">
-          {error || 'No records found or link has expired'}
-        </div>
-      </div>
+      <ErrorState 
+        message={error || 'No records found or link has expired'} 
+      />
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F0F4FF] to-white p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8">
-          <p className="text-amber-700 text-sm flex items-center">
-            🔒 This link expires in 5 minutes
+    <div className="min-h-screen bg-gradient-to-b from-[#F0F4FF] to-white">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-8"
+        >
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+            <Shield className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Shared Medical Records
+          </h1>
+          <p className="text-gray-600">
+            View-only access to selected medical records
           </p>
-        </div>
+        </motion.div>
 
-        <div className="space-y-6">
-          {records.map((record) => (
-            <div key={record.id} className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    {record.title}
-                  </h2>
-                  <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-2 ${getTypeColor(record.type)}`}>
-                    {record.type}
-                  </span>
-                </div>
-                {record.is_emergency && (
-                  <AlertTriangle className="text-amber-500 w-6 h-6 flex-shrink-0" />
-                )}
-              </div>
-
-              {record.description && (
-                <p className="text-gray-600 mb-4">{record.description}</p>
-              )}
-
-              <div className="space-y-2 text-sm text-gray-500">
-                {record.hospital_name && (
-                  <p>Hospital: {record.hospital_name}</p>
-                )}
-                {record.doctor_name && (
-                  <p>Doctor: {record.doctor_name}</p>
-                )}
-                {record.consultation_date && (
-                  <p>Date: {new Date(record.consultation_date).toLocaleDateString()}</p>
-                )}
-              </div>
-
-              {record.file_url && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <a
-                    href={record.file_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-primary hover:text-primary/90"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    View File
-                  </a>
-                </div>
-              )}
+        {/* Security Notice */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-8"
+        >
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start space-x-3">
+            <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-amber-800">
+                Temporary Access
+              </h3>
+              <p className="text-amber-700 text-sm mt-1">
+                This shared link expires in 5 minutes for security. Save or download any necessary information before it expires.
+              </p>
             </div>
-          ))}
+          </div>
+        </motion.div>
+
+        {/* Records Grid */}
+        <div className="space-y-6">
+          <AnimatePresence>
+            {records.map((record, index) => (
+              <motion.div
+                key={record.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className={`card bg-gradient-to-br ${getTypeGradient(record.type)}`}
+              >
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(record.type)}`}>
+                      {record.type}
+                    </span>
+                    <h2 className="text-xl font-semibold text-gray-900 mt-2">
+                      {record.title}
+                    </h2>
+                  </div>
+                  {record.is_emergency && (
+                    <div className="bg-red-100 p-2 rounded-lg">
+                      <AlertTriangle className="text-red-500 w-5 h-5" />
+                    </div>
+                  )}
+                </div>
+
+                {record.description && (
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-gray-600 mb-6"
+                  >
+                    {record.description}
+                  </motion.p>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  {record.hospital_name && (
+                    <div className="flex items-center text-gray-600">
+                      <Hospital className="w-5 h-5 mr-2 text-gray-400" />
+                      <span>{record.hospital_name}</span>
+                    </div>
+                  )}
+                  
+                  {record.doctor_name && (
+                    <div className="flex items-center text-gray-600">
+                      <User className="w-5 h-5 mr-2 text-gray-400" />
+                      <span>{record.doctor_name}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                  <div className="flex items-center text-gray-500">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    <span className="text-sm">
+                      {new Date(record.consultation_date).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  {record.file_url && (
+                    <motion.a
+                      href={record.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-primary hover:text-primary/90"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download File
+                    </motion.a>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
-      </div>
+
+        {/* Footer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-8 text-center text-sm text-gray-500 flex items-center justify-center"
+        >
+          <Clock className="w-4 h-4 mr-2" />
+          Shared via MediVault
+        </motion.div>
+      </main>
     </div>
   )
 }
