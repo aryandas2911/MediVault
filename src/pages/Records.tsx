@@ -83,17 +83,27 @@ export default function Records() {
       if (action === 'view') {
         window.open(signedUrl, '_blank')
       } else {
+        // Create a temporary anchor element to trigger download
         const link = document.createElement('a')
-        link.href = signedUrl
-        link.download = `${record.title}-${new Date().toISOString()}`
+        const response = await fetch(signedUrl)
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        link.href = url
+        link.download = `${record.title}${getFileExtension(record.file_url)}`
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
       }
     } catch (error) {
       toast.error('Failed to access file')
       console.error(error)
     }
+  }
+
+  const getFileExtension = (url: string): string => {
+    const extension = url.split('.').pop()
+    return extension ? `.${extension}` : ''
   }
 
   const filteredRecords = records.filter(record => {
