@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import { useEffect } from 'react'
 import { 
   Shield, QrCode, FileText, ChevronRight, 
   Upload, Share2, Clock, CheckCircle, ArrowRight
@@ -73,6 +74,10 @@ const benefits = [
 
 export default function Landing() {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
