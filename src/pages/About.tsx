@@ -87,15 +87,26 @@ export default function About() {
                 <p className="text-xl text-gray-600 mb-8">
                   One wallet for all your medical records. Accessible. Searchable. Shareable.
                 </p>
-                <motion.button
-                  onClick={() => navigate('/dashboard')}
-                  className="btn-primary max-w-xs flex items-center justify-center group"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Get Started
-                  <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </motion.button>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <motion.button
+                    onClick={() => navigate('/records')}
+                    className="btn-primary flex items-center justify-center group"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    View Your Records
+                    <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                  <motion.button
+                    onClick={() => navigate('/share')}
+                    className="btn-secondary flex items-center justify-center group"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Share with Doctor
+                    <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                </div>
               </motion.div>
               
               <motion.div
@@ -153,23 +164,36 @@ export default function About() {
               <div className="card bg-gradient-to-r from-primary/90 to-secondary/90 text-white overflow-hidden relative">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10" />
                 <div className="relative text-center">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                    Join 1,000+ patients managing health smarter
+                  <h2 className="text-3xl font-bold text-white mb-4">
+                    Ready to explore MediVault?
                   </h2>
-                  <p className="text-xl text-gray-600 mb-8">
-                    Start organizing your medical records today with MediVault
+                  <p className="text-xl text-white/90 mb-8">
+                    Discover how MediVault can transform your healthcare journey
                   </p>
-                  <motion.button
-                    onClick={() => navigate('/dashboard')}
-                    className="bg-white text-primary px-6 py-3 rounded-xl font-medium 
-                           hover:bg-gray-100 transition-colors inline-flex items-center
-                           hover:shadow-lg"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    Start Managing Now
-                    <ChevronRight className="w-5 h-5 ml-2" />
-                  </motion.button>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <motion.button
+                      onClick={() => navigate('/profile')}
+                      className="bg-white text-primary px-6 py-3 rounded-xl font-medium 
+                             hover:bg-gray-100 transition-colors inline-flex items-center
+                             hover:shadow-lg"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Complete Your Profile
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </motion.button>
+                    <motion.button
+                      onClick={() => navigate('/records')}
+                      className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-xl font-medium 
+                             hover:bg-white/20 transition-colors inline-flex items-center
+                             hover:shadow-lg"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Browse Records
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </motion.button>
+                  </div>
                 </div>
               </div>
             </div>
