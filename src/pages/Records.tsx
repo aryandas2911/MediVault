@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  AlertTriangle, FileText, Pencil, Search,
-  Filter, Calendar, ChevronRight, PlusCircle,
-  Trash2, ChevronDown, Hospital, User, Clock,
-  X, Download
-} from 'lucide-react'
+import { AlertTriangle, FileText, Pencil, Search, Filter, Calendar, ChevronRight, PlusCircle, Trash2, ChevronDown, Guitar as Hospital, User, Clock, X, Download } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
 import { getMedicalRecords, deleteMedicalRecord, deleteFile } from '../lib/supabase'
