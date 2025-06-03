@@ -8,6 +8,7 @@ import {
   Plus, ArrowRight
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import { useAuth } from '../context/AuthContext'
 import { getDashboardStats, getRecentActivity, getExtendedProfile } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
@@ -155,191 +156,194 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
-      <Navbar />
-      
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="relative mb-12"
-        >
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-5 rounded-3xl" />
-          <div className="relative p-8 rounded-3xl bg-white/50 backdrop-blur-sm border border-white/20">
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">
-              Welcome, {userName}! 👋
-            </h1>
-            <p className="text-xl text-gray-600">
-              Manage your medical records securely in one place
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Stats Grid */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
-        >
-          {statCards.map((stat, index) => (
-            <motion.div
-              key={stat.title}
-              className={`card hover:shadow-lg transition-all duration-300 overflow-hidden relative bg-gradient-to-br ${stat.color}`}
-              whileHover={{ y: -5 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <stat.icon className="w-16 h-16" />
-              </div>
-              <div className="relative">
-                <h3 className="text-lg font-semibold">
-                  {stat.title}
-                </h3>
-                <p className="text-3xl font-bold mt-2">
-                  {stat.value}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Quick Actions */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
-        >
-          {navigationCards.map((card, index) => (
-            <motion.button
-              key={card.path}
-              onClick={() => navigate(card.path)}
-              className={`card hover:shadow-lg transition-all duration-300 text-left bg-gradient-to-br ${card.color}`}
-              whileHover={{ y: -5, scale: 1.02 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="p-3 rounded-xl bg-white/50 inline-block mb-4">
-                    <card.icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-lg font-semibold">
-                    {card.title}
-                  </h3>
-                  <p className="text-sm mt-1 opacity-80">
-                    {card.description}
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            </motion.button>
-          ))}
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Activity */}
+    <PageTransition>
+      <div className="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
+        <Navbar />
+        
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header Section */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="lg:col-span-2"
+            transition={{ duration: 0.5 }}
+            className="relative mb-12"
           >
-            <div className="card">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Recent Activity
-              </h2>
-              <div className="space-y-4">
-                {recentActivity.map((record) => (
-                  <motion.div
-                    key={record.id}
-                    className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-gray-50 to-white hover:from-gray-100 hover:to-gray-50 transition-colors"
-                    whileHover={{ x: 5 }}
-                  >
-                    <div>
-                      <h3 className="font-medium text-gray-900">
-                        {record.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {new Date(record.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <span className={`badge ${
-                      record.type === 'prescription' ? 'badge-blue' :
-                      record.type === 'allergy' ? 'badge-red' :
-                      record.type === 'condition' ? 'badge-purple' :
-                      'badge-green'
-                    }`}>
-                      {record.type}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-5 rounded-3xl" />
+            <div className="relative p-8 rounded-3xl bg-white/50 backdrop-blur-sm border border-white/20">
+              <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                Welcome, {userName}! 👋
+              </h1>
+              <p className="text-xl text-gray-600">
+                Manage your medical records securely in one place
+              </p>
             </div>
           </motion.div>
 
-          {/* Health Tips */}
+          {/* Stats Grid */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          >
+            {statCards.map((stat, index) => (
+              <motion.div
+                key={stat.title}
+                className={`card hover:shadow-lg transition-all duration-300 overflow-hidden relative bg-gradient-to-br ${stat.color}`}
+                whileHover={{ y: -5 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <stat.icon className="w-16 h-16" />
+                </div>
+                <div className="relative">
+                  <h3 className="text-lg font-semibold">
+                    {stat.title}
+                  </h3>
+                  <p className="text-3xl font-bold mt-2">
+                    {stat.value}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Quick Actions */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          >
+            {navigationCards.map((card, index) => (
+              <motion.button
+                key={card.path}
+                onClick={() => navigate(card.path)}
+                className={`card hover:shadow-lg transition-all duration-300 text-left bg-gradient-to-br ${card.color}`}
+                whileHover={{ y: -5, scale: 1.02 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="p-3 rounded-xl bg-white/50 inline-block mb-4">
+                      <card.icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-semibold">
+                      {card.title}
+                    </h3>
+                    <p className="text-sm mt-1 opacity-80">
+                      {card.description}
+                    </p>
+                  </div>
+                  <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </motion.button>
+            ))}
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Recent Activity */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="lg:col-span-2"
+            >
+              <div className="card">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Recent Activity
+                </h2>
+                <div className="space-y-4">
+                  {recentActivity.map((record) => (
+                    <motion.div
+                      key={record.id}
+                      className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-gray-50 to-white hover:from-gray-100 hover:to-gray-50 transition-colors"
+                      whileHover={{ x: 5 }}
+                    >
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          {record.title}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {new Date(record.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <span className={`badge ${
+                        record.type === 'prescription' ? 'badge-blue' :
+                        record.type === 'allergy' ? 'badge-red' :
+                        record.type === 'condition' ? 'badge-purple' :
+                        'badge-green'
+                      }`}>
+                        {record.type}
+                      </span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Health Tips */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <div className="card bg-gradient-to-br from-blue-50 to-purple-50">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Health Tips
+                </h2>
+                <motion.div
+                  key={currentTipIndex}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className={`p-6 rounded-xl ${healthTips[currentTipIndex].color}`}
+                >
+                  <h3 className="font-medium text-gray-900 mb-2">
+                    {healthTips[currentTipIndex].title}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {healthTips[currentTipIndex].description}
+                  </p>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* CTA Footer */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mt-12"
           >
-            <div className="card bg-gradient-to-br from-blue-50 to-purple-50">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Health Tips
-              </h2>
-              <motion.div
-                key={currentTipIndex}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className={`p-6 rounded-xl ${healthTips[currentTipIndex].color}`}
-              >
-                <h3 className="font-medium text-gray-900 mb-2">
-                  {healthTips[currentTipIndex].title}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {healthTips[currentTipIndex].description}
-                </p>
-              </motion.div>
+            <div className="card bg-gradient-to-r from-primary/90 to-secondary/90 text-white overflow-hidden relative">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10" />
+              <div className="relative text-center">
+                <h2 className="text-2xl font-bold mb-4">
+                  Your health data, always with you
+                </h2>
+                <motion.button
+                  onClick={() => navigate('/add-record')}
+                  className="bg-white text-primary px-6 py-3 rounded-xl font-medium 
+                           hover:bg-gray-100 transition-colors inline-flex items-center
+                           hover:shadow-lg"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Start Managing Now
+                  <ChevronRight className="w-5 h-5 ml-2" />
+                </motion.button>
+              </div>
             </div>
           </motion.div>
-        </div>
-
-        {/* CTA Footer */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-12"
-        >
-          <div className="card bg-gradient-to-r from-primary/90 to-secondary/90 text-white overflow-hidden relative">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10" />
-            <div className="relative text-center">
-              <h2 className="text-2xl font-bold mb-4">
-                Your health data, always with you
-              </h2>
-              <motion.button
-                onClick={() => navigate('/add-record')}
-                className="bg-white text-primary px-6 py-3 rounded-xl font-medium 
-                         hover:bg-gray-100 transition-colors inline-flex items-center
-                         hover:shadow-lg"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Start Managing Now
-                <ChevronRight className="w-5 h-5 ml-2" />
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-      </main>
-    </div>
+        </main>
+        <Footer />
+      </div>
+    </PageTransition>
   )
 }

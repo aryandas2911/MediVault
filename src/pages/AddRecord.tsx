@@ -8,6 +8,7 @@ import PageTransition from '../components/PageTransition'
 import { createMedicalRecord, uploadFile } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import type { MedicalRecordType } from '../types/database'
+import Footer from '../components/Footer'
 
 const recordTypes = [
   {
@@ -388,6 +389,7 @@ export default function AddRecord() {
             </motion.div>
           </div>
         </main>
+        <Footer />
       </div>
     </PageTransition>
   )
