@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import { useEffect } from 'react'
 import { 
   Lock, Shield, FileText, Users, Key, Mail,
   ChevronRight, AlertTriangle, Eye, Server
@@ -97,6 +98,10 @@ const sections = [
 
 export default function Privacy() {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <PageTransition>
