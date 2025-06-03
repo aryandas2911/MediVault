@@ -1,9 +1,29 @@
 import { LogOut, UserCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { getExtendedProfile } from '../lib/supabase'
+import { motion } from 'framer-motion'
 
 export default function Navbar() {
-  const { signOut } = useAuth()
+  const { signOut, session } = useAuth()
+  const [userName, setUserName] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (session?.user.id) {
+      loadUserProfile()
+    }
+  }, [session])
+
+  const loadUserProfile = async () => {
+    try {
+      const profile = await getExtendedProfile(session!.user.id)
+      setUserName(profile?.full_name || 'User')
+    } catch (error) {
+      console.error('Error loading profile:', error)
+      setUserName('User')
+    }
+  }
 
   return (
     <nav className="bg-white shadow-sm">
@@ -16,6 +36,14 @@ export default function Navbar() {
             MediVault
           </Link>
           <div className="flex items-center space-x-4">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="text-primary font-medium hidden sm:block"
+            >
+              Hello, {userName}
+            </motion.div>
             <Link
               to="/profile"
               className="flex items-center text-accent hover:text-primary transition-colors"
