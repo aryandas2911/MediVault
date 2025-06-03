@@ -316,6 +316,7 @@ export default function Landing() {
                 About
               </motion.button>
               <motion.button
+                onClick={() => navigate('/privacy')}
                 className="text-gray-600 hover:text-gray-900 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
