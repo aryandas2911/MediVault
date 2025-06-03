@@ -93,6 +93,14 @@ export default function Landing() {
               className="flex space-x-4"
             >
               <motion.button
+                onClick={() => navigate('/about')}
+                className="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100/80 transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                About
+              </motion.button>
+              <motion.button
                 onClick={() => navigate('/login')}
                 className="px-4 py-2 rounded-lg text-primary hover:bg-primary/5 transition-colors"
                 whileHover={{ scale: 1.02 }}
@@ -307,15 +315,28 @@ export default function Landing() {
               © 2025 MediVault. All rights reserved.
             </div>
             <div className="flex space-x-6">
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+              <motion.button
+                onClick={() => navigate('/about')}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 About
-              </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+              </motion.button>
+              <motion.button
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 Privacy Policy
-              </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+              </motion.button>
+              <motion.button
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 Contact
-              </a>
+              </motion.button>
             </div>
           </div>
         </div>
