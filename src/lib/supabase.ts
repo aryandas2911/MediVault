@@ -163,9 +163,10 @@ export const uploadFile = async (file: File, userId: string) => {
   
   if (error) throw error
   
+  // Get public URL with proper configuration
   const { data: { publicUrl } } = supabase.storage
     .from('medical_files')
-    .getPublicUrl(fileName)
+    .getPublicUrl(data.path)
   
   return publicUrl
 }
