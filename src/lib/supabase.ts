@@ -157,12 +157,11 @@ export const uploadFile = async (file: File, userId: string) => {
   const fileExt = file.name.split('.').pop()
   const fileName = `${userId}/${Date.now()}.${fileExt}`
   
-  const { data, error } = await supabase.storage
+  const { error: uploadError } = await supabase.storage
     .from('medical_files')
     .upload(fileName, file)
   
-  if (error) throw error
-  
+  if (uploadError) throw uploadError
   return fileName
 }
 
