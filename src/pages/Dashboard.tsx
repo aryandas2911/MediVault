@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { 
-  PlusCircle, Files, Share2, Info,
-  FileText, AlertTriangle, Calendar, Clock,
-  ChevronRight
+  AlertTriangle, FileText, Share2, Info,
+  Clock, ChevronRight, PlusCircle, Files
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
@@ -61,6 +60,24 @@ interface DashboardStats {
   emergencyRecords: number
   upcomingConsultations: number
   lastUpdated: string | null
+}
+
+function FadeInWhenVisible({ children }: { children: React.ReactNode }) {
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1
+  })
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.5 }}
+    >
+      {children}
+    </motion.div>
+  )
 }
 
 export default function Dashboard() {
@@ -125,7 +142,7 @@ export default function Dashboard() {
     {
       title: 'Upcoming Consultations',
       value: stats?.upcomingConsultations ?? 0,
-      icon: Calendar,
+      icon: Clock,
       color: 'bg-green-100 text-green-600'
     },
     {
@@ -315,3 +332,4 @@ export default function Dashboard() {
       </main>
     </div>
   )
+}
