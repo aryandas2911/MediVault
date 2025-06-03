@@ -163,32 +163,24 @@ export const uploadFile = async (file: File, userId: string) => {
   
   if (error) throw error
   
-  // Get signed URL for secure access (valid for 1 hour)
-  const { data: { signedUrl } } = await supabase.storage
-    .from('medical_files')
-    .createSignedUrl(data.path, 3600)
-  
-  return signedUrl
+  return fileName
 }
 
 // Get signed URL for file
 export const getSignedFileUrl = async (filePath: string) => {
-  const { data: { signedUrl }, error } = await supabase.storage
+  const { data, error } = await supabase.storage
     .from('medical_files')
     .createSignedUrl(filePath, 3600)
   
   if (error) throw error
-  return signedUrl
+  return data.signedUrl
 }
 
 // Delete file from storage
-export const deleteFile = async (fileUrl: string) => {
-  const fileName = fileUrl.split('/').pop()
-  if (!fileName) return
-
+export const deleteFile = async (filePath: string) => {
   const { error } = await supabase.storage
     .from('medical_files')
-    .remove([fileName])
+    .remove([filePath])
   
   if (error) throw error
 }
