@@ -167,9 +167,15 @@ export const uploadFile = async (file: File, userId: string) => {
 
 // Get signed URL for file
 export const getSignedFileUrl = async (filePath: string) => {
+  // If the filePath is a full URL, extract just the path part after the bucket name
+  let path = filePath
+  if (filePath.includes('medical_files/')) {
+    path = filePath.split('medical_files/').pop() || ''
+  }
+  
   const { data, error } = await supabase.storage
     .from('medical_files')
-    .createSignedUrl(filePath, 3600)
+    .createSignedUrl(path, 3600)
   
   if (error) throw error
   return data.signedUrl
@@ -177,9 +183,15 @@ export const getSignedFileUrl = async (filePath: string) => {
 
 // Delete file from storage
 export const deleteFile = async (filePath: string) => {
+  // If the filePath is a full URL, extract just the path part after the bucket name
+  let path = filePath
+  if (filePath.includes('medical_files/')) {
+    path = filePath.split('medical_files/').pop() || ''
+  }
+  
   const { error } = await supabase.storage
     .from('medical_files')
-    .remove([filePath])
+    .remove([path])
   
   if (error) throw error
 }
