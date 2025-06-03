@@ -8,6 +8,7 @@ import PageTransition from '../components/PageTransition'
 import { useAuth } from '../context/AuthContext'
 import { getExtendedProfile, updateExtendedProfile } from '../lib/supabase'
 import type { UserProfile } from '../types/database'
+import Footer from '../components/Footer'
 
 function UserAvatar({ name, size = 'large' }: { name: string, size?: 'large' | 'small' }) {
   const initials = name
@@ -375,6 +376,7 @@ export default function Profile() {
             </motion.div>
           </div>
         </main>
+        <Footer />
       </div>
     </PageTransition>
   )

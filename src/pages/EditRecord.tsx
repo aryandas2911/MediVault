@@ -9,6 +9,7 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import { getMedicalRecord, updateMedicalRecord, uploadFile, deleteMedicalRecord, deleteFile } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import type { MedicalRecordType } from '../types/database'
+import Footer from '../components/Footer'
 
 const recordTypes = [
   {
@@ -439,6 +440,7 @@ export default function EditRecord() {
             </motion.div>
           </div>
         </main>
+        <Footer />
 
         {/* Delete Confirmation Modal */}
         <AnimatePresence>
