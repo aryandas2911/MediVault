@@ -44,6 +44,24 @@ const features = [
   }
 ]
 
+const teamMembers = [
+  {
+    name: 'Dr. Sarah Chen',
+    role: 'Medical Director',
+    image: 'https://images.pexels.com/photos/5452293/pexels-photo-5452293.jpeg?auto=compress&cs=tinysrgb&w=800'
+  },
+  {
+    name: 'Michael Roberts',
+    role: 'Chief Technology Officer',
+    image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800'
+  },
+  {
+    name: 'Emily Thompson',
+    role: 'Head of Security',
+    image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg?auto=compress&cs=tinysrgb&w=800'
+  }
+]
+
 function FadeInWhenVisible({ children }: { children: React.ReactNode }) {
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -138,6 +156,43 @@ export default function About() {
                     </h3>
                     <p className="text-gray-600">
                       {feature.description}
+                    </p>
+                  </motion.div>
+                </FadeInWhenVisible>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Team Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-[#F0F4FF]">
+          <div className="max-w-7xl mx-auto">
+            <FadeInWhenVisible>
+              <h2 className="text-3xl font-bold text-center text-gray-900 mb-4">
+                Meet Our Team
+              </h2>
+              <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+                Our dedicated team of healthcare and technology experts working to make your medical records management seamless and secure.
+              </p>
+            </FadeInWhenVisible>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {teamMembers.map((member, index) => (
+                <FadeInWhenVisible key={member.name}>
+                  <motion.div
+                    className="card hover:shadow-lg transition-all duration-300 text-center"
+                    whileHover={{ y: -5 }}
+                  >
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
+                    />
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      {member.name}
+                    </h3>
+                    <p className="text-gray-600">
+                      {member.role}
                     </p>
                   </motion.div>
                 </FadeInWhenVisible>
