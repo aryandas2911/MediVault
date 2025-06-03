@@ -163,12 +163,22 @@ export const uploadFile = async (file: File, userId: string) => {
   
   if (error) throw error
   
-  // Get public URL with proper configuration
-  const { data: { publicUrl } } = supabase.storage
+  // Get signed URL for secure access (valid for 1 hour)
+  const { data: { signedUrl } } = await supabase.storage
     .from('medical_files')
-    .getPublicUrl(data.path)
+    .createSignedUrl(data.path, 3600)
   
-  return publicUrl
+  return signedUrl
+}
+
+// Get signed URL for file
+export const getSignedFileUrl = async (filePath: string) => {
+  const { data: { signedUrl }, error } = await supabase.storage
+    .from('medical_files')
+    .createSignedUrl(filePath, 3600)
+  
+  if (error) throw error
+  return signedUrl
 }
 
 // Delete file from storage
