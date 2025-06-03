@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AlertTriangle, FileText, Pencil, Search, Filter, Calendar, ChevronRight, PlusCircle, Trash2, ChevronDown, Guitar as Hospital, User, Clock, X, Download } from 'lucide-react'
+import { AlertTriangle, FileText, Pencil, Search, Filter, Calendar, ChevronRight, PlusCircle, Trash2, ChevronDown, Guitar as Hospital, User, Clock, X, Download, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
-import { getMedicalRecords, deleteMedicalRecord, deleteFile } from '../lib/supabase'
+import { getMedicalRecords, deleteMedicalRecord, deleteFile, getSignedFileUrl } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import type { MedicalRecord, MedicalRecordType } from '../types/database'
 
@@ -71,6 +71,28 @@ export default function Records() {
       console.error(error)
     } finally {
       setDeleteConfirm(null)
+    }
+  }
+
+  const handleFileAction = async (record: MedicalRecord, action: 'view' | 'download') => {
+    if (!record.file_url) return
+    
+    try {
+      const signedUrl = await getSignedFileUrl(record.file_url)
+      
+      if (action === 'view') {
+        window.open(signedUrl, '_blank')
+      } else {
+        const link = document.createElement('a')
+        link.href = signedUrl
+        link.download = `${record.title}-${new Date().toISOString()}`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }
+    } catch (error) {
+      toast.error('Failed to access file')
+      console.error(error)
     }
   }
 
@@ -400,17 +422,26 @@ export default function Records() {
                   <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
                     <div className="flex space-x-4">
                       {record.file_url && (
-                        <motion.a
-                          href={record.file_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center text-primary hover:text-primary/90"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Download className="w-4 h-4 mr-1" />
-                          Download
-                        </motion.a>
+                        <div className="flex space-x-4">
+                          <motion.button
+                            onClick={() => handleFileAction(record, 'view')}
+                            className="flex items-center text-primary hover:text-primary/90"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            View
+                          </motion.button>
+                          <motion.button
+                            onClick={() => handleFileAction(record, 'download')}
+                            className="flex items-center text-primary hover:text-primary/90"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <Download className="w-4 h-4 mr-1" />
+                            Download
+                          </motion.button>
+                        </div>
                       )}
                       <motion.button
                         onClick={() => navigate(`/edit-record/${record.id}`)}
