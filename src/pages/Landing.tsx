@@ -93,14 +93,6 @@ export default function Landing() {
               className="flex space-x-4"
             >
               <motion.button
-                onClick={() => navigate('/about')}
-                className="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100/80 transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                About
-              </motion.button>
-              <motion.button
                 onClick={() => navigate('/login')}
                 className="px-4 py-2 rounded-lg text-primary hover:bg-primary/5 transition-colors"
                 whileHover={{ scale: 1.02 }}
