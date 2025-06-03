@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import PageTransition from '../components/PageTransition'
+import Footer from '../components/Footer'
 
 function FadeInWhenVisible({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) {
   const [ref, inView] = useInView({
@@ -209,6 +210,7 @@ export default function Privacy() {
             </div>
           </FadeInWhenVisible>
         </main>
+        <Footer />
       </div>
     </PageTransition>
   )

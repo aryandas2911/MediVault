@@ -8,6 +8,7 @@ import {
   Search, Check, Copy, Download
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import { getMedicalRecords } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import type { MedicalRecord } from '../types/database'
@@ -361,6 +362,7 @@ export default function Share() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   )
 }

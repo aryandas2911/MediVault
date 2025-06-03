@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle, FileText, Pencil, Search, Filter, Calendar, ChevronRight, PlusCircle, Trash2, ChevronDown, Building2 as Hospital, User, Clock, X, Download, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import { getMedicalRecords, deleteMedicalRecord, deleteFile, getSignedFileUrl } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import type { MedicalRecord, MedicalRecordType } from '../types/database'
@@ -517,6 +518,7 @@ export default function Records() {
           </div>
         </motion.div>
       </main>
+      <Footer />
     </div>
   )
 }

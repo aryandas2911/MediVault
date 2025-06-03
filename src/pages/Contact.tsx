@@ -9,6 +9,7 @@ import {
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
 import PageTransition from '../components/PageTransition'
+import Footer from '../components/Footer'
 
 const contactInfo = [
   {
@@ -294,6 +295,7 @@ export default function Contact() {
             </motion.div>
           </div>
         </main>
+        <Footer />
       </div>
     </PageTransition>
   )

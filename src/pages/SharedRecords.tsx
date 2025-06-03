@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle, FileText, Download, Clock, Guitar as Hospital, User, Calendar, Shield, Info } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
+import Footer from '../components/Footer'
 
 function LoadingSpinner() {
   return (
@@ -229,6 +230,7 @@ export default function SharedRecords() {
           Shared via MediVault
         </motion.div>
       </main>
+      <Footer />
     </div>
   )
 }
