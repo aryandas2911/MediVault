@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Upload, FileText, Trash2, AlertCircle, Save,
-  Hospital, User, Calendar, AlertTriangle,
-  ChevronRight, HelpCircle, Pill, Stethoscope,
-  FileCheck, Download
-} from 'lucide-react'
+import { Upload, FileText, Trash2, AlertCircle, Save, Guitar as Hospital, User, Calendar, AlertTriangle, ChevronRight, HelpCircle, Pill, Stethoscope, FileCheck, Download } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
 import PageTransition from '../components/PageTransition'
