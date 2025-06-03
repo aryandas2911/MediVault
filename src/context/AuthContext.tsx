@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           profile = await createUserProfile({
             id: currentSession.user.id,
             email: currentSession.user.email!,
-            full_name: currentSession.user.user_metadata?.full_name || 'User'
+            full_name: currentSession.user.user_metadata?.full_name || currentSession.user.email?.split('@')[0] || 'User'
           })
         }
         
