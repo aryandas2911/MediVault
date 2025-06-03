@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import PageTransition from '../components/PageTransition'
 import { useAuth } from '../context/AuthContext'
 import { getDashboardStats, getRecentActivity, getExtendedProfile } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
