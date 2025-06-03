@@ -6,6 +6,17 @@ export type User = {
   blood_group: string
 }
 
+export type UserProfile = {
+  id: string
+  full_name: string | null
+  date_of_birth: string | null
+  gender: string | null
+  phone_number: string | null
+  blood_group: string | null
+  address: string | null
+  created_at: string
+}
+
 export type MedicalRecordType = 'prescription' | 'allergy' | 'condition' | 'report'
 
 export type MedicalRecord = {

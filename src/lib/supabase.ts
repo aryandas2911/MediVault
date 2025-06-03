@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { User, MedicalRecord } from '../types/database'
+import { User, MedicalRecord, UserProfile } from '../types/database'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -33,6 +33,29 @@ export const getUserProfile = async (userId: string) => {
   
   if (error) throw error
   return data?.[0] || null
+}
+
+// Profile operations
+export const getExtendedProfile = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('*')
+    .eq('id', userId)
+    .single()
+  
+  if (error && error.code !== 'PGRST116') throw error
+  return data as UserProfile | null
+}
+
+export const updateExtendedProfile = async (userId: string, profile: Partial<UserProfile>) => {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .upsert({ id: userId, ...profile })
+    .select()
+    .single()
+  
+  if (error) throw error
+  return data as UserProfile
 }
 
 // Medical record operations

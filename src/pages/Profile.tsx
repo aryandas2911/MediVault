@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Save, User, Calendar, Phone, MapPin, Activity, ChevronRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
 import PageTransition from '../components/PageTransition'
 import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
+import { getExtendedProfile, updateExtendedProfile } from '../lib/supabase'
+import type { UserProfile } from '../types/database'
 
 export default function Profile() {
+  const navigate = useNavigate()
   const { session } = useAuth()
   const [loading, setLoading] = useState(false)
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<Partial<UserProfile>>({
     full_name: '',
     date_of_birth: '',
     gender: '',
@@ -27,13 +30,7 @@ export default function Profile() {
 
   const loadProfile = async () => {
     try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', session!.user.id)
-        .single()
-
-      if (error) throw error
+      const data = await getExtendedProfile(session!.user.id)
       if (data) {
         setProfile({
           full_name: data.full_name || '',
@@ -56,14 +53,7 @@ export default function Profile() {
 
     setLoading(true)
     try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .upsert({
-          id: session.user.id,
-          ...profile
-        })
-
-      if (error) throw error
+      await updateExtendedProfile(session.user.id, profile)
       toast.success('Profile updated successfully')
     } catch (error) {
       console.error('Error updating profile:', error)
@@ -107,7 +97,8 @@ export default function Profile() {
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input
                         type="text"
-                        value={profile.full_name}
+                        required
+                        value={profile.full_name || ''}
                         onChange={(e) => setProfile(prev => ({ ...prev, full_name: e.target.value }))}
                         className="input-field pl-10"
                         placeholder="John Doe"
@@ -123,7 +114,8 @@ export default function Profile() {
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input
                         type="date"
-                        value={profile.date_of_birth}
+                        required
+                        value={profile.date_of_birth || ''}
                         onChange={(e) => setProfile(prev => ({ ...prev, date_of_birth: e.target.value }))}
                         className="input-field pl-10"
                       />
@@ -135,7 +127,7 @@ export default function Profile() {
                       Gender
                     </label>
                     <select
-                      value={profile.gender}
+                      value={profile.gender || ''}
                       onChange={(e) => setProfile(prev => ({ ...prev, gender: e.target.value }))}
                       className="input-field"
                     >
@@ -154,7 +146,8 @@ export default function Profile() {
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input
                         type="tel"
-                        value={profile.phone_number}
+                        required
+                        value={profile.phone_number || ''}
                         onChange={(e) => setProfile(prev => ({ ...prev, phone_number: e.target.value }))}
                         className="input-field pl-10"
                         placeholder="+1 (555) 000-0000"
@@ -169,7 +162,7 @@ export default function Profile() {
                     <div className="mt-1 relative">
                       <Activity className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <select
-                        value={profile.blood_group}
+                        value={profile.blood_group || ''}
                         onChange={(e) => setProfile(prev => ({ ...prev, blood_group: e.target.value }))}
                         className="input-field pl-10"
                       >
@@ -193,7 +186,7 @@ export default function Profile() {
                     <div className="mt-1 relative">
                       <MapPin className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
                       <textarea
-                        value={profile.address}
+                        value={profile.address || ''}
                         onChange={(e) => setProfile(prev => ({ ...prev, address: e.target.value }))}
                         rows={3}
                         className="input-field pl-10"
@@ -203,16 +196,26 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <div className="mt-6">
+                <div className="mt-6 flex flex-col sm:flex-row gap-4">
                   <motion.button
                     type="submit"
                     disabled={loading}
-                    className="btn-primary flex items-center justify-center"
+                    className="btn-primary flex-1 flex items-center justify-center"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <Save className="w-5 h-5 mr-2" />
                     {loading ? 'Saving...' : 'Save Changes'}
+                  </motion.button>
+
+                  <motion.button
+                    type="button"
+                    onClick={() => navigate('/dashboard')}
+                    className="btn-secondary flex-1 flex items-center justify-center"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Back to Dashboard
                     <ChevronRight className="w-5 h-5 ml-2" />
                   </motion.button>
                 </div>
