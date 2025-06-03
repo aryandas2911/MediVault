@@ -12,6 +12,7 @@ import Share from './pages/Share'
 import SharedRecords from './pages/SharedRecords'
 import About from './pages/About'
 import Privacy from './pages/Privacy'
+import Contact from './pages/Contact'
 import Profile from './pages/Profile'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoadingSpinner from './components/LoadingSpinner'
@@ -128,6 +129,10 @@ export default function App() {
             <Route
               path="/privacy"
               element={<Privacy />}
+            />
+            <Route
+              path="/contact"
+              element={<Contact />}
             />
             <Route
               path="/profile"
