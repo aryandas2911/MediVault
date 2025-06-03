@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
 import { 
   PlusCircle, Files, Share2, Info,
   FileText, AlertTriangle, Calendar, Clock,
@@ -63,7 +64,7 @@ interface DashboardStats {
 }
 
 export default function Dashboard() {
-  const { userProfile, session } = useAuth()
+  const { session, userProfile } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentActivity, setRecentActivity] = useState<MedicalRecord[]>([])
@@ -134,7 +135,7 @@ export default function Dashboard() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-gray-900">
-            Welcome, {userProfile?.full_name || 'User'}! 👋
+            Welcome, {userProfile?.full_name || session?.user.user_metadata?.full_name || 'User'}! 👋
           </h1>
           <p className="mt-2 text-gray-600">
             Manage your medical records securely in one place
