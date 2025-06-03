@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AlertTriangle, FileText, Pencil, Search, Filter, Calendar, ChevronRight, PlusCircle, Trash2, ChevronDown, Guitar as Hospital, User, Clock, X, Download, Eye } from 'lucide-react'
+import { AlertTriangle, FileText, Pencil, Search, Filter, Calendar, ChevronRight, PlusCircle, Trash2, ChevronDown, Building2 as Hospital, User, Clock, X, Download, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
 import { getMedicalRecords, deleteMedicalRecord, deleteFile, getSignedFileUrl } from '../lib/supabase'
@@ -120,16 +120,6 @@ export default function Records() {
       report: 'bg-green-100 text-green-800'
     }
     return colors[type as keyof typeof colors]
-  }
-
-  const getTypeGradient = (type: string) => {
-    const gradients = {
-      prescription: 'from-blue-50 to-blue-100/50',
-      allergy: 'from-red-50 to-red-100/50',
-      condition: 'from-purple-50 to-purple-100/50',
-      report: 'from-green-50 to-green-100/50'
-    }
-    return gradients[type as keyof typeof gradients]
   }
 
   return (
@@ -354,8 +344,7 @@ export default function Records() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className={`card hover:shadow-lg transition-all duration-300
-                           bg-gradient-to-br ${getTypeGradient(record.type)}`}
+                  className="card hover:shadow-lg transition-all duration-300"
                 >
                   <motion.div
                     className="cursor-pointer"
