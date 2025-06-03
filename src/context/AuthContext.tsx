@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           full_name: fullName
         })
         setUserProfile(profile)
-        toast.success('Account created successfully!')
+        toast.success('Account created successfully! Please check your email for confirmation.')
       }
     } catch (error) {
       toast.error('Failed to create account')
@@ -90,10 +90,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password,
       })
-      if (error) throw error
+      if (error) {
+        if (error.message === 'Email not confirmed') {
+          toast.error('Please confirm your email address before logging in. Check your inbox for the confirmation link.')
+        } else {
+          toast.error('Invalid login credentials')
+        }
+        throw error
+      }
       toast.success('Welcome back!')
     } catch (error) {
-      toast.error('Invalid login credentials')
       throw error
     }
   }
