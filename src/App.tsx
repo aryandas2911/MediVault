@@ -10,6 +10,7 @@ import Records from './pages/Records'
 import Share from './pages/Share'
 import SharedRecords from './pages/SharedRecords'
 import About from './pages/About'
+import Profile from './pages/Profile'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoadingSpinner from './components/LoadingSpinner'
 
@@ -118,7 +119,15 @@ export default function App() {
                 </PrivateRoute>
               }
             />
-            <Route path="/" element={<Navigate to="/login\" replace />} />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/" element={<Navigate to="/login" replace />} />
           </Routes>
         </AnimatePresence>
       </BrowserRouter>
