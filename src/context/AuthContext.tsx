@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           profile = await createUserProfile({
             id: currentSession.user.id,
             email: currentSession.user.email!,
-            full_name: 'New User'
+            full_name: currentSession.user.user_metadata?.full_name || 'User'
           })
         }
         
@@ -66,6 +66,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
       })
       if (error) throw error
 
