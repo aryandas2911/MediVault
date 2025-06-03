@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
-import { getDashboardStats, getRecentActivity } from '../lib/supabase'
+import { getDashboardStats, getRecentActivity, getExtendedProfile } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
 
 const healthTips = [
@@ -64,15 +64,17 @@ interface DashboardStats {
 }
 
 export default function Dashboard() {
-  const { session, userProfile } = useAuth()
+  const { session } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentActivity, setRecentActivity] = useState<MedicalRecord[]>([])
   const [currentTipIndex, setCurrentTipIndex] = useState(0)
+  const [userName, setUserName] = useState<string>('User')
 
   useEffect(() => {
     if (session?.user.id) {
       loadDashboardData()
+      loadUserProfile()
     }
   }, [session])
 
@@ -82,6 +84,17 @@ export default function Dashboard() {
     }, 5000)
     return () => clearInterval(timer)
   }, [])
+
+  const loadUserProfile = async () => {
+    try {
+      const profile = await getExtendedProfile(session!.user.id)
+      if (profile?.full_name) {
+        setUserName(profile.full_name)
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error)
+    }
+  }
 
   const loadDashboardData = async () => {
     try {
@@ -135,7 +148,7 @@ export default function Dashboard() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-gray-900">
-            Welcome, {userProfile?.full_name || session?.user.user_metadata?.full_name || 'User'}! 👋
+            Welcome, {userName}! 👋
           </h1>
           <p className="mt-2 text-gray-600">
             Manage your medical records securely in one place
@@ -302,4 +315,3 @@ export default function Dashboard() {
       </main>
     </div>
   )
-}
