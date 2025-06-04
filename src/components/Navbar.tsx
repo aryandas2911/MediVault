@@ -1,70 +1,46 @@
-import { LogOut, UserCircle, Sun, Moon } from 'lucide-react'
+import { LogOut, UserCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { useTheme } from '../context/ThemeContext'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 export default function Navbar({ showAuthButtons = true }: { showAuthButtons?: boolean }) {
   const { signOut, session } = useAuth()
-  const { theme, toggleTheme } = useTheme()
   const location = useLocation()
 
   const isPublicPage = ['/about', '/privacy', '/contact'].includes(location.pathname)
 
   return (
-    <nav className="sticky top-0 z-50 bg-gradient-to-r from-[#F0F4FF] to-white dark:from-[#0D1117] dark:to-[#1E293B] px-4 py-2 shadow-sm transition-colors duration-300">
+    <nav className="sticky top-0 z-50 bg-gradient-to-r from-[#F0F4FF] to-white px-4 py-2 shadow-sm">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between h-14 items-center">
           <Link 
             to={session ? '/dashboard' : '/'} 
-            className="flex items-center text-2xl font-bold text-primary dark:text-white hover:text-primary/90 dark:hover:text-primary transition-colors"
+            className="flex items-center text-2xl font-bold text-primary hover:text-primary/90 transition-colors"
           >
             MediVault
           </Link>
           <div className="flex items-center space-x-4">
-            {/* Theme Toggle Switch */}
-            <motion.div
-              className="relative"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <button
-                onClick={toggleTheme}
-                className="w-14 h-8 rounded-full bg-gray-200 dark:bg-gray-700 relative transition-colors duration-300
-                         flex items-center justify-between px-2"
-                aria-label="Toggle theme"
-              >
-                <Sun className="w-4 h-4 text-yellow-500 absolute left-2 transition-opacity duration-300
-                              opacity-100 dark:opacity-50" />
-                <Moon className="w-4 h-4 text-gray-600 dark:text-gray-300 absolute right-2 transition-opacity duration-300
-                               opacity-50 dark:opacity-100" />
-                <div className={`w-6 h-6 rounded-full bg-white dark:bg-gray-800 absolute 
-                                transition-transform duration-300 shadow-md
-                                ${theme === 'dark' ? 'translate-x-6' : 'translate-x-0'}`} />
-              </button>
-            </motion.div>
-
             {/* Public Page Navigation */}
             {isPublicPage && !session && (
               <div className="flex items-center space-x-4">
                 <Link 
                   to="/about"
-                  className={`text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors
-                            ${location.pathname === '/about' ? 'text-primary dark:text-primary' : ''}`}
+                  className={`text-gray-600 hover:text-primary transition-colors
+                            ${location.pathname === '/about' ? 'text-primary' : ''}`}
                 >
                   About
                 </Link>
                 <Link 
                   to="/privacy"
-                  className={`text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors
-                            ${location.pathname === '/privacy' ? 'text-primary dark:text-primary' : ''}`}
+                  className={`text-gray-600 hover:text-primary transition-colors
+                            ${location.pathname === '/privacy' ? 'text-primary' : ''}`}
                 >
                   Privacy
                 </Link>
                 <Link 
                   to="/contact"
-                  className={`text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors
-                            ${location.pathname === '/contact' ? 'text-primary dark:text-primary' : ''}`}
+                  className={`text-gray-600 hover:text-primary transition-colors
+                            ${location.pathname === '/contact' ? 'text-primary' : ''}`}
                 >
                   Contact
                 </Link>
@@ -76,13 +52,13 @@ export default function Navbar({ showAuthButtons = true }: { showAuthButtons?: b
               <div className="flex items-center space-x-4">
                 <Link 
                   to="/login"
-                  className="text-primary dark:text-white hover:text-primary/90 dark:hover:text-primary/90 transition-colors"
+                  className="text-primary hover:text-primary/90 transition-colors"
                 >
                   Login
                 </Link>
                 <Link 
                   to="/register"
-                  className="bg-primary dark:bg-primary-dark text-white px-4 py-2 rounded-lg hover:bg-primary/90 dark:hover:bg-primary transition-colors"
+                  className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   Sign Up
                 </Link>
@@ -99,12 +75,11 @@ export default function Navbar({ showAuthButtons = true }: { showAuthButtons?: b
                   <Link
                     to="/profile"
                     className="flex items-center justify-center w-10 h-10 rounded-full 
-                             bg-white/50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 
-                             transition-all duration-300
+                             bg-white/50 hover:bg-white transition-all duration-300
                              group-hover:ring-4 group-hover:ring-primary/20"
                     title="Profile"
                   >
-                    <UserCircle className="w-6 h-6 text-primary dark:text-white" />
+                    <UserCircle className="w-6 h-6 text-primary" />
                   </Link>
                   <div className="absolute top-full mt-2 right-0 w-auto whitespace-nowrap
                                 bg-gray-800 text-white text-sm py-1 px-2 rounded
@@ -118,12 +93,11 @@ export default function Navbar({ showAuthButtons = true }: { showAuthButtons?: b
                   whileHover={{ scale: 1.05 }}
                   onClick={signOut}
                   className="flex items-center justify-center w-10 h-10 rounded-full 
-                           bg-white/50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 
-                           transition-all duration-300
+                           bg-white/50 hover:bg-white transition-all duration-300
                            hover:ring-4 hover:ring-primary/20 group relative"
                   title="Logout"
                 >
-                  <LogOut className="w-6 h-6 text-primary dark:text-white" />
+                  <LogOut className="w-6 h-6 text-primary" />
                   <div className="absolute top-full mt-2 right-0 w-auto whitespace-nowrap
                                 bg-gray-800 text-white text-sm py-1 px-2 rounded
                                 opacity-0 group-hover:opacity-100 transition-opacity
