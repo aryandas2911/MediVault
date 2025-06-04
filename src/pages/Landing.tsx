@@ -101,26 +101,17 @@ export default function Landing() {
               <p className="text-xl text-gray-600 mb-8">
                 MediVault lets you store, manage, and share your medical records safely in one place.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <motion.button
-                  onClick={() => navigate('/register')}
-                  className="btn-primary flex items-center justify-center group"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Get Started Free
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </motion.button>
-                <motion.button
-                  onClick={() => navigate('/about')}
-                  className="btn-secondary flex items-center justify-center"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Learn More
-                  <ChevronRight className="w-5 h-5 ml-2" />
-                </motion.button>
-              </div>
+              <motion.button
+                onClick={() => navigate('/register')}
+                className="bg-white text-primary px-8 py-4 rounded-xl font-medium 
+                         hover:bg-gray-100 transition-colors inline-flex items-center
+                         hover:shadow-lg"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Get Started Now
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </motion.button>
             </motion.div>
             
             <motion.div
