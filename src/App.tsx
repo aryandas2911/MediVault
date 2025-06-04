@@ -15,6 +15,7 @@ import Privacy from './pages/Privacy'
 import Contact from './pages/Contact'
 import Profile from './pages/Profile'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import LoadingSpinner from './components/LoadingSpinner'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -40,111 +41,113 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-              borderRadius: '0.75rem',
-            },
-          }}
-        />
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <PublicRoute>
-                  <Landing />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/register"
-              element={
-                <PublicRoute>
-                  <Register />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/add-record"
-              element={
-                <PrivateRoute>
-                  <AddRecord />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/edit-record/:id"
-              element={
-                <PrivateRoute>
-                  <EditRecord />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/records"
-              element={
-                <PrivateRoute>
-                  <Records />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/share"
-              element={
-                <PrivateRoute>
-                  <Share />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/shared/:id"
-              element={<SharedRecords />}
-            />
-            <Route
-              path="/about"
-              element={<About />}
-            />
-            <Route
-              path="/privacy"
-              element={<Privacy />}
-            />
-            <Route
-              path="/contact"
-              element={<Contact />}
-            />
-            <Route
-              path="/profile"
-              element={
-                <PrivateRoute>
-                  <Profile />
-                </PrivateRoute>
-              }
-            />
-          </Routes>
-        </AnimatePresence>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+                borderRadius: '0.75rem',
+              },
+            }}
+          />
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <PublicRoute>
+                    <Landing />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <PublicRoute>
+                    <Register />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/add-record"
+                element={
+                  <PrivateRoute>
+                    <AddRecord />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/edit-record/:id"
+                element={
+                  <PrivateRoute>
+                    <EditRecord />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/records"
+                element={
+                  <PrivateRoute>
+                    <Records />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/share"
+                element={
+                  <PrivateRoute>
+                    <Share />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/shared/:id"
+                element={<SharedRecords />}
+              />
+              <Route
+                path="/about"
+                element={<About />}
+              />
+              <Route
+                path="/privacy"
+                element={<Privacy />}
+              />
+              <Route
+                path="/contact"
+                element={<Contact />}
+              />
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </AnimatePresence>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }
