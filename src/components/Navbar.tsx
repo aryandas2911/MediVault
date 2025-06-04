@@ -23,25 +23,19 @@ export default function Navbar({ showAuthButtons = true }: { showAuthButtons?: b
           </Link>
           <div className="flex items-center space-x-4">
             {/* Theme Toggle */}
-            <div className="flex items-center">
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox"
-                  checked={theme === 'dark'}
-                  onChange={toggleTheme}
-                  className="sr-only peer"
-                />
-                <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 
-                              dark:peer-focus:ring-primary/20 rounded-full peer dark:bg-gray-700 
-                              peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] 
-                              after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 
-                              after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 
-                              peer-checked:bg-primary relative overflow-hidden">
-                  <Sun className="absolute left-1 top-1 h-5 w-5 text-yellow-500 transition-opacity opacity-100 dark:opacity-0" />
-                  <Moon className="absolute right-1 top-1 h-5 w-5 text-slate-200 transition-opacity opacity-0 dark:opacity-100" />
-                </div>
-              </label>
-            </div>
+            <motion.button
+              onClick={toggleTheme}
+              className="w-10 h-10 rounded-full bg-white/50 dark:bg-gray-800 flex items-center justify-center
+                       hover:bg-white dark:hover:bg-gray-700 transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <Moon className="w-5 h-5 text-gray-600" />
+              )}
+            </motion.button>
 
             {/* Public Page Navigation */}
             {isPublicPage && !session && (
