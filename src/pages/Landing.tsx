@@ -80,6 +80,10 @@ export default function Landing() {
     window.scrollTo(0, 0)
   }, [])
 
+  const handleGetStarted = () => {
+    navigate('/register')
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
       <Navbar showAuthButtons={true} />
@@ -103,7 +107,7 @@ export default function Landing() {
               </p>
               <div className="flex justify-center">
                 <motion.button
-                  onClick={() => navigate('/register')}
+                  onClick={handleGetStarted}
                   className="bg-primary text-white px-8 py-4 rounded-xl font-medium text-lg
                            hover:bg-primary/90 transition-colors inline-flex items-center
                            hover:shadow-lg w-full sm:w-auto justify-center"
@@ -249,7 +253,7 @@ export default function Landing() {
                   Join thousands of users who trust MediVault with their health information
                 </p>
                 <motion.button
-                  onClick={() => navigate('/register')}
+                  onClick={handleGetStarted}
                   className="bg-white text-primary px-8 py-4 rounded-xl font-medium 
                            hover:bg-gray-100 transition-colors inline-flex items-center
                            hover:shadow-lg"
