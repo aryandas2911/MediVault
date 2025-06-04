@@ -22,20 +22,27 @@ export default function Navbar({ showAuthButtons = true }: { showAuthButtons?: b
             MediVault
           </Link>
           <div className="flex items-center space-x-4">
-            {/* Theme Toggle */}
-            <motion.button
-              onClick={toggleTheme}
-              className="w-10 h-10 rounded-full bg-white/50 dark:bg-gray-800 flex items-center justify-center
-                       hover:bg-white dark:hover:bg-gray-700 transition-all duration-300"
+            {/* Theme Toggle Switch */}
+            <motion.div
+              className="relative"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {theme === 'dark' ? (
-                <Sun className="w-5 h-5 text-yellow-500" />
-              ) : (
-                <Moon className="w-5 h-5 text-gray-600" />
-              )}
-            </motion.button>
+              <button
+                onClick={toggleTheme}
+                className="w-14 h-8 rounded-full bg-gray-200 dark:bg-gray-700 relative transition-colors duration-300
+                         flex items-center justify-between px-2"
+                aria-label="Toggle theme"
+              >
+                <Sun className="w-4 h-4 text-yellow-500 absolute left-2 transition-opacity duration-300
+                              opacity-100 dark:opacity-50" />
+                <Moon className="w-4 h-4 text-gray-600 dark:text-gray-300 absolute right-2 transition-opacity duration-300
+                               opacity-50 dark:opacity-100" />
+                <div className={`w-6 h-6 rounded-full bg-white dark:bg-gray-800 absolute 
+                                transition-transform duration-300 shadow-md
+                                ${theme === 'dark' ? 'translate-x-6' : 'translate-x-0'}`} />
+              </button>
+            </motion.div>
 
             {/* Public Page Navigation */}
             {isPublicPage && !session && (
