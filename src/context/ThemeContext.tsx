@@ -11,15 +11,22 @@ const ThemeContext = createContext<ThemeContextType>({} as ThemeContextType)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Check localStorage first
+    // Check localStorage and system preference
     const savedTheme = localStorage.getItem('theme')
-    // Return saved theme if valid, otherwise default to 'light'
-    return (savedTheme === 'dark' || savedTheme === 'light') ? savedTheme as Theme : 'light'
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      return savedTheme as Theme
+    }
+    // Default to light theme
+    return 'light'
   })
 
   useEffect(() => {
-    // Update class and localStorage whenever theme changes
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    // Update DOM and localStorage when theme changes
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
     localStorage.setItem('theme', theme)
   }, [theme])
 
