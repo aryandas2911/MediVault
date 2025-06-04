@@ -82,8 +82,8 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
-      <Navbar />
-
+      <Navbar showAuthButtons={true} />
+      
       {/* Hero Section */}
       <section className="relative pt-20 pb-32 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-5" />
