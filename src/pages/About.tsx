@@ -1,49 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import { useEffect } from 'react'
 import { FileText, QrCode, CloudCog as CloudCheck, Shield, Share2, Clock, ChevronRight } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import PageTransition from '../components/PageTransition'
-
-const features = [
-  {
-    icon: FileText,
-    title: 'All-in-One Record Wallet',
-    description: 'Upload and manage reports, prescriptions, allergies, and more in one secure place.',
-    color: 'text-blue-600 bg-blue-100'
-  },
-  {
-    icon: QrCode,
-    title: 'Quick Share via QR',
-    description: 'Share medical records instantly with healthcare providers using secure QR codes.',
-    color: 'text-purple-600 bg-purple-100'
-  },
-  {
-    icon: CloudCheck,
-    title: 'Always Accessible',
-    description: 'Access your medical history anytime, anywhere, from any device securely.',
-    color: 'text-green-600 bg-green-100'
-  },
-  {
-    icon: Shield,
-    title: 'Bank-Level Security',
-    description: 'Your health data is encrypted and protected with the highest security standards.',
-    color: 'text-red-600 bg-red-100'
-  },
-  {
-    icon: Share2,
-    title: 'Easy Sharing',
-    description: 'Share specific records with doctors or family members with granular control.',
-    color: 'text-amber-600 bg-amber-100'
-  },
-  {
-    icon: Clock,
-    title: 'Time-Limited Access',
-    description: 'Set expiration times for shared records to maintain privacy and control.',
-    color: 'text-indigo-600 bg-indigo-100'
-  }
-]
 
 function FadeInWhenVisible({ children }: { children: React.ReactNode }) {
   const [ref, inView] = useInView({
@@ -63,17 +25,69 @@ function FadeInWhenVisible({ children }: { children: React.ReactNode }) {
   )
 }
 
+const features = [
+  {
+    icon: FileText,
+    title: "Upload and View Medical Records",
+    description: "Store all your medical documents securely in one place. Access them anytime, anywhere.",
+    color: "from-blue-500/10 to-blue-600/10 text-blue-600"
+  },
+  {
+    icon: QrCode,
+    title: "Secure QR Sharing with Doctors",
+    description: "Share your records instantly with healthcare providers using secure, time-limited QR codes.",
+    color: "from-purple-500/10 to-purple-600/10 text-purple-600"
+  },
+  {
+    icon: Shield,
+    title: "One Wallet for All Health Documents",
+    description: "Keep prescriptions, reports, and medical history organized in your digital health wallet.",
+    color: "from-green-500/10 to-green-600/10 text-green-600"
+  }
+]
+
+const steps = [
+  {
+    icon: FileText,
+    title: "Upload Your Records",
+    description: "Easily upload and organize your medical documents"
+  },
+  {
+    icon: Shield,
+    title: "Secure Storage",
+    description: "Your records are encrypted and stored safely"
+  },
+  {
+    icon: Share2,
+    title: "Share When Needed",
+    description: "Instantly share records with healthcare providers"
+  }
+]
+
+const benefits = [
+  "Bank-level security for your medical data",
+  "Access your records 24/7 from any device",
+  "Share records securely with QR codes",
+  "Organize all health documents in one place",
+  "Track your medical history efficiently"
+]
+
 export default function About() {
   const navigate = useNavigate()
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-b from-[#F0F4FF] to-white">
+      <div className="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
         <Navbar />
+        
         <main>
           {/* Hero Section */}
           <section className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-5" />
+            <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg')] bg-cover bg-center opacity-5" />
             
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 relative">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -117,7 +131,7 @@ export default function About() {
                   className="relative"
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&q=80"
+                    src="https://images.pexels.com/photos/7579831/pexels-photo-7579831.jpeg"
                     alt="Doctor using digital tablet"
                     className="rounded-2xl shadow-2xl w-full"
                   />
@@ -142,7 +156,7 @@ export default function About() {
                       className="card hover:shadow-lg transition-all duration-300"
                       whileHover={{ y: -5 }}
                     >
-                      <div className={`p-3 rounded-xl inline-block ${feature.color} mb-4`}>
+                      <div className={`p-3 rounded-xl inline-block bg-gradient-to-br ${feature.color} mb-4`}>
                         <feature.icon className="w-6 h-6" />
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -158,47 +172,105 @@ export default function About() {
             </div>
           </section>
 
-          {/* Bottom CTA */}
-          <section className="py-20 px-4 sm:px-6 lg:px-8">
-            <FadeInWhenVisible>
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="card bg-gradient-to-r from-primary/90 to-secondary/90 text-white overflow-hidden relative">
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10" />
-                  <div className="relative text-center">
-                    <h2 className="text-3xl font-bold text-white mb-4">
-                      Ready to explore MediVault?
+          {/* How It Works */}
+          <section className="py-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <FadeInWhenVisible>
+                <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+                  How MediVault Works
+                </h2>
+              </FadeInWhenVisible>
+
+              <div className="grid md:grid-cols-3 gap-8">
+                {steps.map((step, index) => (
+                  <FadeInWhenVisible key={step.title} delay={index * 0.2}>
+                    <div className="relative">
+                      {index < steps.length - 1 && (
+                        <div className="hidden md:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-primary/20 to-transparent" />
+                      )}
+                      <div className="card text-center hover:shadow-lg transition-all duration-300">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-6">
+                          <step.icon className="w-8 h-8 text-white" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          {step.title}
+                        </h3>
+                        <p className="text-gray-600">
+                          {step.description}
+                        </p>
+                      </div>
+                    </div>
+                  </FadeInWhenVisible>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Why MediVault */}
+          <section className="py-20 bg-gradient-to-b from-[#F0F4FF] to-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid lg:grid-cols-2 gap-12 items-center">
+                <FadeInWhenVisible>
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-8">
+                      Why Choose MediVault?
                     </h2>
-                    <p className="text-xl text-white/90 mb-8">
-                      Discover how MediVault can transform your healthcare journey
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <motion.button
-                        onClick={() => navigate('/profile')}
-                        className="bg-white text-primary px-6 py-3 rounded-xl font-medium 
-                               hover:bg-gray-100 transition-colors inline-flex items-center
-                               hover:shadow-lg"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        Complete Your Profile
-                        <ChevronRight className="w-5 h-5 ml-2" />
-                      </motion.button>
-                      <motion.button
-                        onClick={() => navigate('/records')}
-                        className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-xl font-medium 
-                               hover:bg-white/20 transition-colors inline-flex items-center
-                               hover:shadow-lg"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        Browse Records
-                        <ChevronRight className="w-5 h-5 ml-2" />
-                      </motion.button>
+                    <div className="space-y-4">
+                      {benefits.map((benefit, index) => (
+                        <motion.div
+                          key={benefit}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex items-center space-x-3"
+                        >
+                          <Clock className="w-5 h-5 text-primary flex-shrink-0" />
+                          <span className="text-gray-600">{benefit}</span>
+                        </motion.div>
+                      ))}
                     </div>
                   </div>
-                </div>
+                </FadeInWhenVisible>
+
+                <FadeInWhenVisible delay={0.2}>
+                  <img
+                    src="https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg"
+                    alt="Medical Professional using MediVault"
+                    className="rounded-2xl shadow-2xl w-full"
+                  />
+                </FadeInWhenVisible>
               </div>
-            </FadeInWhenVisible>
+            </div>
+          </section>
+
+          {/* CTA Section */}
+          <section className="py-20">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+              <FadeInWhenVisible>
+                <div className="card bg-gradient-to-r from-primary to-secondary text-white overflow-hidden relative">
+                  <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/7579831/pexels-photo-7579831.jpeg')] bg-cover bg-center opacity-10" />
+                  <div className="relative text-center">
+                    <h2 className="text-3xl font-bold mb-4">
+                      Ready to Take Control of Your Medical Records?
+                    </h2>
+                    <p className="text-xl opacity-90 mb-8">
+                      Join thousands of users who trust MediVault with their health information
+                    </p>
+                    <motion.button
+                      onClick={() => navigate('/register')}
+                      className="bg-white text-primary px-8 py-4 rounded-xl font-medium 
+                               hover:bg-gray-100 transition-colors inline-flex items-center
+                               hover:shadow-lg"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Get Started Now
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </motion.button>
+                  </div>
+                </div>
+              </FadeInWhenVisible>
+            </div>
           </section>
         </main>
         <Footer />
