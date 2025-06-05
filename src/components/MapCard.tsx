@@ -81,7 +81,6 @@ export default function MapCard() {
         const data = await response.json()
         if (data.elements && data.elements.length > 0) {
           setPlaces(data.elements)
-          toast.success(`Found ${data.elements.length} healthcare centers nearby`)
         } else {
           toast.error('No healthcare centers found nearby. Try increasing search radius.')
         }
