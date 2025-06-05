@@ -54,34 +54,40 @@ export default function MapCard() {
       setUserLocation([latitude, longitude])
       
       try {
-        // Fetch nearby hospitals using Overpass API
+        // Fetch nearby hospitals using Overpass API with a larger radius
         const query = `
-          [out:json][timeout:25];
+          [out:json][timeout:90];
           (
-            node(around:2000,${latitude},${longitude})[amenity=hospital];
-            node(around:2000,${latitude},${longitude})[amenity=clinic];
+            node(around:5000,${latitude},${longitude})[amenity=hospital];
+            node(around:5000,${latitude},${longitude})[amenity=clinic];
+            node(around:5000,${latitude},${longitude})[amenity=doctors];
           );
           out body;
         `
+        
         const response = await fetch('https://overpass-api.de/api/interpreter', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
           },
           body: `data=${encodeURIComponent(query)}`
         })
         
-        if (!response.ok) throw new Error('Failed to fetch places')
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
         
         const data = await response.json()
         if (data.elements && data.elements.length > 0) {
           setPlaces(data.elements)
+          toast.success(`Found ${data.elements.length} healthcare centers nearby`)
         } else {
-          toast.error('No healthcare centers found nearby')
+          toast.error('No healthcare centers found nearby. Try increasing search radius.')
         }
       } catch (error) {
         console.error('Error fetching places:', error)
-        toast.error('Failed to load nearby healthcare centers')
+        toast.error('Failed to load nearby healthcare centers. Please try again.')
       } finally {
         setLoading(false)
       }
@@ -112,7 +118,7 @@ export default function MapCard() {
 
     const options: PositionOptions = {
       enableHighAccuracy: true,
-      timeout: 10000,
+      timeout: 30000, // Increased timeout to 30 seconds
       maximumAge: 0
     }
 
@@ -158,7 +164,7 @@ export default function MapCard() {
           <div className="rounded-xl overflow-hidden shadow-md">
             <MapContainer
               center={userLocation}
-              zoom={14}
+              zoom={13} // Decreased zoom level to show more area
               scrollWheelZoom={false}
             >
               <TileLayer
