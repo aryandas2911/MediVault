@@ -85,7 +85,7 @@ export default function Landing() {
       <Navbar showAuthButtons={true} />
       
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center">
+      <section className="relative min-h-[90vh] flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Text Content */}
@@ -108,11 +108,11 @@ export default function Landing() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6"
+                className="text-5xl lg:text-7xl font-bold text-gray-900 leading-tight mb-6"
               >
-                Your Health Records,{" "}
+                Your Medical Records,{" "}
                 <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  Secured Forever
+                  Secured
                 </span>
               </motion.h1>
               
@@ -147,10 +147,10 @@ export default function Landing() {
                 initial={{ scale: 0.95 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 1 }}
-                className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/3]"
+                className="relative rounded-2xl overflow-hidden shadow-2xl"
               >
                 <img
-                  src="https://images.pexels.com/photos/3846035/pexels-photo-3846035.jpeg"
+                  src="https://images.pexels.com/photos/7579831/pexels-photo-7579831.jpeg"
                   alt="Digital Healthcare"
                   className="w-full h-full object-cover"
                 />
@@ -272,7 +272,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInWhenVisible>
             <div className="card bg-gradient-to-r from-primary to-secondary text-white overflow-hidden relative">
-              <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/3846035/pexels-photo-3846035.jpeg')] bg-cover bg-center opacity-10" />
+              <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/7579831/pexels-photo-7579831.jpeg')] bg-cover bg-center opacity-10" />
               <div className="relative text-center">
                 <h2 className="text-3xl font-bold mb-4">
                   Ready to Take Control of Your Medical Records?
