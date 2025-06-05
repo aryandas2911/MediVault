@@ -4,7 +4,8 @@ import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
 import { 
   Shield, QrCode, FileText, ChevronRight, 
-  Upload, Share2, Clock, CheckCircle, ArrowRight
+  Upload, Share2, Clock, CheckCircle, ArrowRight,
+  LogIn, UserPlus
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 
@@ -80,10 +81,6 @@ export default function Landing() {
     window.scrollTo(0, 0)
   }, [])
 
-  const handleGetStarted = () => {
-    navigate('/register')
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
       <Navbar showAuthButtons={true} />
@@ -105,17 +102,24 @@ export default function Landing() {
               <p className="text-xl text-gray-600 mb-8">
                 MediVault lets you store, manage, and share your medical records safely in one place.
               </p>
-              <div className="flex justify-center">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <motion.button
-                  onClick={handleGetStarted}
-                  className="bg-primary text-white px-8 py-4 rounded-xl font-medium text-lg
-                           hover:bg-primary/90 transition-colors inline-flex items-center
-                           hover:shadow-lg w-full sm:w-auto justify-center"
+                  onClick={() => navigate('/register')}
+                  className="btn-primary flex items-center justify-center group"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  Get Started Now
-                  <ArrowRight className="w-6 h-6 ml-2" />
+                  <UserPlus className="w-5 h-5 mr-2" />
+                  Create Free Account
+                </motion.button>
+                <motion.button
+                  onClick={() => navigate('/login')}
+                  className="btn-secondary flex items-center justify-center group"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <LogIn className="w-5 h-5 mr-2" />
+                  Sign In
                 </motion.button>
               </div>
             </motion.div>
@@ -252,17 +256,30 @@ export default function Landing() {
                 <p className="text-xl opacity-90 mb-8">
                   Join thousands of users who trust MediVault with their health information
                 </p>
-                <motion.button
-                  onClick={handleGetStarted}
-                  className="bg-white text-primary px-8 py-4 rounded-xl font-medium 
-                           hover:bg-gray-100 transition-colors inline-flex items-center
-                           hover:shadow-lg"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Get Started Now
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </motion.button>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <motion.button
+                    onClick={() => navigate('/register')}
+                    className="bg-white text-primary px-6 py-3 rounded-xl font-medium 
+                             hover:bg-gray-100 transition-colors inline-flex items-center
+                             hover:shadow-lg"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <UserPlus className="w-5 h-5 mr-2" />
+                    Create Free Account
+                  </motion.button>
+                  <motion.button
+                    onClick={() => navigate('/login')}
+                    className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-xl 
+                             font-medium hover:bg-white/20 transition-colors inline-flex items-center
+                             hover:shadow-lg"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <LogIn className="w-5 h-5 mr-2" />
+                    Sign In
+                  </motion.button>
+                </div>
               </div>
             </div>
           </FadeInWhenVisible>
