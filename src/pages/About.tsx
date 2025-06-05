@@ -79,17 +79,17 @@ const features = [
 
 const timeline = [
   {
-    year: '2023',
+    year: '2025',
     title: 'MediVault Launch',
     description: 'Revolutionizing medical record management with secure digital storage.'
   },
   {
-    year: '2024',
+    year: '2026',
     title: 'Mobile App Release',
     description: 'Bringing medical records to your pocket with our iOS and Android apps.'
   },
   {
-    year: '2025',
+    year: '2027',
     title: 'Global Expansion',
     description: 'Now serving healthcare providers and patients worldwide.'
   }
