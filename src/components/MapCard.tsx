@@ -6,37 +6,92 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import toast from 'react-hot-toast'
 
-// Create custom marker icon
-const customIcon = new L.Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+// Create custom marker icon for user location
+const userIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41]
 })
 
+// Create custom marker icon for hospitals
+const hospitalIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+})
+
+interface Place {
+  lat: number
+  lon: number
+  tags: {
+    name?: string
+    amenity: string
+  }
+}
+
 export default function MapCard() {
   const navigate = useNavigate()
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
+  const [places, setPlaces] = useState<Place[]>([])
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation([position.coords.latitude, position.coords.longitude])
-        },
-        (error) => {
-          console.error('Error getting location:', error)
-          setError('Could not access your location. Please enable location services.')
-          toast.error('Location access required to show nearby centers')
-        }
-      )
-    } else {
+    if (!navigator.geolocation) {
       setError('Geolocation is not supported by your browser')
+      setLoading(false)
+      return
     }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        setUserLocation([latitude, longitude])
+        
+        try {
+          // Fetch nearby hospitals using Overpass API
+          const query = `
+            [out:json];
+            (
+              node(around:2000,${latitude},${longitude})[amenity=hospital];
+              node(around:2000,${latitude},${longitude})[amenity=clinic];
+            );
+            out;
+          `
+          const response = await fetch('https://overpass-api.de/api/interpreter', {
+            method: 'POST',
+            body: `data=${encodeURIComponent(query)}`
+          })
+          
+          if (!response.ok) throw new Error('Failed to fetch places')
+          
+          const data = await response.json()
+          setPlaces(data.elements)
+        } catch (error) {
+          console.error('Error fetching places:', error)
+          toast.error('Failed to load nearby healthcare centers')
+        } finally {
+          setLoading(false)
+        }
+      },
+      (error) => {
+        console.error('Error getting location:', error)
+        setError('Could not access your location. Please enable location services.')
+        setLoading(false)
+        toast.error('Location access required to show nearby centers')
+      },
+      { 
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    )
   }, [])
 
   if (error) {
@@ -78,18 +133,38 @@ export default function MapCard() {
           <div className="rounded-xl overflow-hidden shadow-md">
             <MapContainer
               center={userLocation}
-              zoom={13}
+              zoom={14}
               scrollWheelZoom={false}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <Marker position={userLocation} icon={customIcon}>
+              
+              {/* User location marker */}
+              <Marker position={userLocation} icon={userIcon}>
                 <Popup>
-                  You are here
+                  <div className="font-medium">You are here</div>
                 </Popup>
               </Marker>
+
+              {/* Hospital markers */}
+              {places.map((place, index) => (
+                <Marker
+                  key={index}
+                  position={[place.lat, place.lon]}
+                  icon={hospitalIcon}
+                >
+                  <Popup>
+                    <div className="font-medium">
+                      {place.tags.name || 'Healthcare Center'}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      {place.tags.amenity.charAt(0).toUpperCase() + place.tags.amenity.slice(1)}
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
             </MapContainer>
           </div>
 
