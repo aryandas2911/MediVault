@@ -49,49 +49,74 @@ export default function MapCard() {
       return
     }
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords
-        setUserLocation([latitude, longitude])
+    const locationSuccess = async (position: GeolocationPosition) => {
+      const { latitude, longitude } = position.coords
+      setUserLocation([latitude, longitude])
+      
+      try {
+        // Fetch nearby hospitals using Overpass API
+        const query = `
+          [out:json][timeout:25];
+          (
+            node(around:2000,${latitude},${longitude})[amenity=hospital];
+            node(around:2000,${latitude},${longitude})[amenity=clinic];
+          );
+          out body;
+        `
+        const response = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `data=${encodeURIComponent(query)}`
+        })
         
-        try {
-          // Fetch nearby hospitals using Overpass API
-          const query = `
-            [out:json];
-            (
-              node(around:2000,${latitude},${longitude})[amenity=hospital];
-              node(around:2000,${latitude},${longitude})[amenity=clinic];
-            );
-            out;
-          `
-          const response = await fetch('https://overpass-api.de/api/interpreter', {
-            method: 'POST',
-            body: `data=${encodeURIComponent(query)}`
-          })
-          
-          if (!response.ok) throw new Error('Failed to fetch places')
-          
-          const data = await response.json()
+        if (!response.ok) throw new Error('Failed to fetch places')
+        
+        const data = await response.json()
+        if (data.elements && data.elements.length > 0) {
           setPlaces(data.elements)
-        } catch (error) {
-          console.error('Error fetching places:', error)
-          toast.error('Failed to load nearby healthcare centers')
-        } finally {
-          setLoading(false)
+        } else {
+          toast.error('No healthcare centers found nearby')
         }
-      },
-      (error) => {
-        console.error('Error getting location:', error)
-        setError('Could not access your location. Please enable location services.')
+      } catch (error) {
+        console.error('Error fetching places:', error)
+        toast.error('Failed to load nearby healthcare centers')
+      } finally {
         setLoading(false)
-        toast.error('Location access required to show nearby centers')
-      },
-      { 
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
       }
-    )
+    }
+
+    const locationError = (error: GeolocationPositionError) => {
+      console.error('Geolocation error:', error)
+      let errorMessage = 'Could not access your location. '
+      
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          errorMessage += 'Please enable location services in your browser settings.'
+          break
+        case error.POSITION_UNAVAILABLE:
+          errorMessage += 'Location information is unavailable.'
+          break
+        case error.TIMEOUT:
+          errorMessage += 'Location request timed out.'
+          break
+        default:
+          errorMessage += 'An unknown error occurred.'
+      }
+      
+      setError(errorMessage)
+      setLoading(false)
+      toast.error('Location access required to show nearby centers')
+    }
+
+    const options: PositionOptions = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+
+    navigator.geolocation.getCurrentPosition(locationSuccess, locationError, options)
   }, [])
 
   if (error) {
