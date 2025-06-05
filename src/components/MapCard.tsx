@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Building2 as Hospital, ChevronRight, AlertCircle } from 'lucide-react'
+import { Building2 as Hospital, ChevronRight } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
-import toast from 'react-hot-toast'
 
 // Create custom marker icon for user location
 const userIcon = new L.Icon({
@@ -39,12 +38,10 @@ export default function MapCard() {
   const navigate = useNavigate()
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const [places, setPlaces] = useState<Place[]>([])
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser')
       setLoading(false)
       return
     }
@@ -54,7 +51,6 @@ export default function MapCard() {
       setUserLocation([latitude, longitude])
       
       try {
-        // Fetch nearby hospitals using Overpass API with a larger radius
         const query = `
           [out:json][timeout:90];
           (
@@ -81,68 +77,29 @@ export default function MapCard() {
         const data = await response.json()
         if (data.elements && data.elements.length > 0) {
           setPlaces(data.elements)
-          toast.success(`Found ${data.elements.length} healthcare centers nearby`)
-        } else {
-          toast.error('No healthcare centers found nearby. Try increasing search radius.')
         }
       } catch (error) {
         console.error('Error fetching places:', error)
-        toast.error('Failed to load nearby healthcare centers. Please try again.')
       } finally {
         setLoading(false)
       }
     }
 
-    const locationError = (error: GeolocationPositionError) => {
-      console.error('Geolocation error:', error)
-      let errorMessage = 'Could not access your location. '
-      
-      switch (error.code) {
-        case error.PERMISSION_DENIED:
-          errorMessage += 'Please enable location services in your browser settings.'
-          break
-        case error.POSITION_UNAVAILABLE:
-          errorMessage += 'Location information is unavailable.'
-          break
-        case error.TIMEOUT:
-          errorMessage += 'Location request timed out.'
-          break
-        default:
-          errorMessage += 'An unknown error occurred.'
-      }
-      
-      setError(errorMessage)
+    const locationError = () => {
       setLoading(false)
-      toast.error('Location access required to show nearby centers')
     }
 
     const options: PositionOptions = {
       enableHighAccuracy: true,
-      timeout: 30000, // Increased timeout to 30 seconds
+      timeout: 30000,
       maximumAge: 0
     }
 
     navigator.geolocation.getCurrentPosition(locationSuccess, locationError, options)
   }, [])
 
-  if (error) {
-    return (
-      <div className="card bg-gradient-to-br from-red-50 to-red-100/50">
-        <div className="flex items-center space-x-3 mb-4">
-          <AlertCircle className="w-5 h-5 text-red-600" />
-          <h3 className="text-lg font-semibold text-red-900">
-            Location Access Required
-          </h3>
-        </div>
-        <p className="text-red-700 mb-4">{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="btn-primary bg-red-600 hover:bg-red-700"
-        >
-          Try Again
-        </button>
-      </div>
-    )
+  if (!userLocation && !loading) {
+    return null
   }
 
   return (
@@ -159,12 +116,12 @@ export default function MapCard() {
         </h2>
       </div>
 
-      {userLocation ? (
+      {userLocation && (
         <div className="space-y-4">
           <div className="rounded-xl overflow-hidden shadow-md">
             <MapContainer
               center={userLocation}
-              zoom={13} // Decreased zoom level to show more area
+              zoom={13}
               scrollWheelZoom={false}
             >
               <TileLayer
@@ -172,14 +129,12 @@ export default function MapCard() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               
-              {/* User location marker */}
               <Marker position={userLocation} icon={userIcon}>
                 <Popup>
                   <div className="font-medium">You are here</div>
                 </Popup>
               </Marker>
 
-              {/* Hospital markers */}
               {places.map((place, index) => (
                 <Marker
                   key={index}
@@ -211,14 +166,6 @@ export default function MapCard() {
             View Full Map
             <ChevronRight className="w-5 h-5 ml-2" />
           </motion.button>
-        </div>
-      ) : (
-        <div className="flex items-center justify-center h-[250px]">
-          <motion.div
-            className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          />
         </div>
       )}
     </motion.div>
