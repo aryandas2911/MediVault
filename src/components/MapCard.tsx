@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 import { Building2 as Hospital, ChevronRight, AlertCircle } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
-import toast from 'react-hot-toast'
 
 // Create custom marker icon for user location
 const userIcon = new L.Icon({
@@ -54,7 +53,6 @@ export default function MapCard() {
       setUserLocation([latitude, longitude])
       
       try {
-        // Fetch nearby hospitals using Overpass API with a larger radius
         const query = `
           [out:json][timeout:90];
           (
@@ -81,12 +79,9 @@ export default function MapCard() {
         const data = await response.json()
         if (data.elements && data.elements.length > 0) {
           setPlaces(data.elements)
-        } else {
-          toast.error('No healthcare centers found nearby. Try increasing search radius.')
         }
       } catch (error) {
         console.error('Error fetching places:', error)
-        toast.error('Failed to load nearby healthcare centers. Please try again.')
       } finally {
         setLoading(false)
       }
@@ -112,12 +107,11 @@ export default function MapCard() {
       
       setError(errorMessage)
       setLoading(false)
-      toast.error('Location access required to show nearby centers')
     }
 
     const options: PositionOptions = {
       enableHighAccuracy: true,
-      timeout: 30000, // Increased timeout to 30 seconds
+      timeout: 30000,
       maximumAge: 0
     }
 
@@ -163,7 +157,7 @@ export default function MapCard() {
           <div className="rounded-xl overflow-hidden shadow-md">
             <MapContainer
               center={userLocation}
-              zoom={13} // Decreased zoom level to show more area
+              zoom={13}
               scrollWheelZoom={false}
             >
               <TileLayer
@@ -171,14 +165,12 @@ export default function MapCard() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               
-              {/* User location marker */}
               <Marker position={userLocation} icon={userIcon}>
                 <Popup>
                   <div className="font-medium">You are here</div>
                 </Popup>
               </Marker>
 
-              {/* Hospital markers */}
               {places.map((place, index) => (
                 <Marker
                   key={index}
