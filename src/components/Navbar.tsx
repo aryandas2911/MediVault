@@ -15,9 +15,14 @@ export default function Navbar({ showAuthButtons = true }: { showAuthButtons?: b
         <div className="flex justify-between h-14 items-center">
           <Link 
             to={session ? '/dashboard' : '/'} 
-            className="flex items-center text-2xl font-bold text-primary hover:text-primary/90 transition-colors"
+            className="flex items-center space-x-2 text-2xl font-bold text-primary hover:text-primary/90 transition-colors"
           >
-            MediVault
+            <img 
+              src="/Logo.png" 
+              alt="MediVault Logo" 
+              className="w-10 h-10 object-contain"
+            />
+            <span>MediVault</span>
           </Link>
           <div className="flex items-center space-x-4">
             {/* Public Page Navigation */}
