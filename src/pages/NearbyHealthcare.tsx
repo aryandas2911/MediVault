@@ -52,10 +52,16 @@ const icons = {
   default: createIcon('blue')
 }
 
-function LocationButton({ onClick }: { onClick: () => void }) {
+function LocationButton() {
+  const map = useMap()
+  
+  const handleClick = () => {
+    map.locate({ setView: true, maxZoom: 15 })
+  }
+
   return (
     <motion.button
-      onClick={onClick}
+      onClick={handleClick}
       className="absolute top-4 right-4 z-[1000] bg-white rounded-lg shadow-lg px-4 py-2
                  hover:shadow-xl transition-shadow duration-300 group"
       whileHover={{ scale: 1.05 }}
@@ -306,7 +312,7 @@ export default function NearbyHealthcare() {
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     
-                    <LocationButton onClick={handleLocateMe} />
+                    <LocationButton />
                     <MapEvents onLocationFound={coords => setUserLocation(coords)} />
 
                     {/* User location marker */}
@@ -342,9 +348,9 @@ export default function NearbyHealthcare() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="mt-3 inline-flex items-center px-3 py-1.5 text-sm font-medium
-                                       text-white bg-gradient-to-r from-primary to-secondary
-                                       rounded-lg hover:from-primary/90 hover:to-secondary/90
-                                       transition-colors shadow-sm hover:shadow-md"
+                                     text-white bg-gradient-to-r from-primary to-secondary
+                                     rounded-lg hover:from-primary/90 hover:to-secondary/90
+                                     transition-colors shadow-sm hover:shadow-md"
                             >
                               Get Directions
                               <ExternalLink className="w-4 h-4 ml-1.5" />
