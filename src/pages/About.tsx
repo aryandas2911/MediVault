@@ -2,8 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { FileText, QrCode, CloudCog as CloudCheck, Shield, Share2, Clock, ChevronRight } from 'lucide-react'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
 import PageTransition from '../components/PageTransition'
 
 const features = [
@@ -68,8 +66,7 @@ export default function About() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-b from-[#F0F4FF] to-white">
-        <Navbar />
+      <div className="min-h-screen">
         <main>
           {/* Hero Section */}
           <section className="relative overflow-hidden">
@@ -201,7 +198,6 @@ export default function About() {
             </FadeInWhenVisible>
           </section>
         </main>
-        <Footer />
       </div>
     </PageTransition>
   )
