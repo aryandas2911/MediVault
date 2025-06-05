@@ -16,10 +16,7 @@ import Contact from './pages/Contact'
 import Profile from './pages/Profile'
 import NearbyHealthcare from './pages/NearbyHealthcare'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import { ThemeProvider } from './context/ThemeContext'
 import LoadingSpinner from './components/LoadingSpinner'
-import Navbar from './components/Navbar'
-import Footer from './components/Footer'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth()
@@ -44,115 +41,119 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 3000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                  borderRadius: '0.75rem',
-                },
-              }}
+      <AuthProvider>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+              borderRadius: '0.75rem',
+            },
+          }}
+        />
+        <AnimatePresence mode="wait">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <Landing />
+                </PublicRoute>
+              }
             />
-            <Navbar />
-            <main className="flex-grow">
-              <AnimatePresence mode="wait">
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <PublicRoute>
-                        <Landing />
-                      </PublicRoute>
-                    }
-                  />
-                  <Route
-                    path="/login"
-                    element={
-                      <PublicRoute>
-                        <Login />
-                      </PublicRoute>
-                    }
-                  />
-                  <Route
-                    path="/register"
-                    element={
-                      <PublicRoute>
-                        <Register />
-                      </PublicRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <PrivateRoute>
-                        <Dashboard />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/add-record"
-                    element={
-                      <PrivateRoute>
-                        <AddRecord />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/edit-record/:id"
-                    element={
-                      <PrivateRoute>
-                        <EditRecord />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/records"
-                    element={
-                      <PrivateRoute>
-                        <Records />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/share"
-                    element={
-                      <PrivateRoute>
-                        <Share />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route path="/shared/:id" element={<SharedRecords />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route
-                    path="/profile"
-                    element={
-                      <PrivateRoute>
-                        <Profile />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/nearby-healthcare"
-                    element={
-                      <PrivateRoute>
-                        <NearbyHealthcare />
-                      </PrivateRoute>
-                    }
-                  />
-                </Routes>
-              </AnimatePresence>
-            </main>
-            <Footer />
-          </div>
-        </AuthProvider>
-      </ThemeProvider>
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/add-record"
+              element={
+                <PrivateRoute>
+                  <AddRecord />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/edit-record/:id"
+              element={
+                <PrivateRoute>
+                  <EditRecord />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/records"
+              element={
+                <PrivateRoute>
+                  <Records />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/share"
+              element={
+                <PrivateRoute>
+                  <Share />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/shared/:id"
+              element={<SharedRecords />}
+            />
+            <Route
+              path="/about"
+              element={<About />}
+            />
+            <Route
+              path="/privacy"
+              element={<Privacy />}
+            />
+            <Route
+              path="/contact"
+              element={<Contact />}
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/nearby-healthcare"
+              element={
+                <PrivateRoute>
+                  <NearbyHealthcare />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </AnimatePresence>
+      </AuthProvider>
     </BrowserRouter>
   )
 }
