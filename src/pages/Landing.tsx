@@ -94,7 +94,7 @@ export default function Landing() {
             transition={{ duration: 1.5, ease: "easeOut" }}
             className="absolute inset-0 bg-[url('https://images.pexels.com/photos/3846035/pexels-photo-3846035.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/90 to-transparent lg:via-white/80 lg:to-white/30" />
         </div>
 
         {/* Floating Images */}
@@ -102,30 +102,34 @@ export default function Landing() {
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="absolute right-10 top-1/4 w-64 h-64 rounded-2xl overflow-hidden shadow-2xl hidden lg:block"
+          className="absolute right-20 top-1/4 w-64 h-80 rounded-2xl overflow-hidden shadow-2xl hidden lg:block"
+          style={{ zIndex: 1 }}
         >
           <img
             src="https://images.pexels.com/photos/7579831/pexels-photo-7579831.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
             alt="Digital Healthcare"
             className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, delay: 0.8 }}
-          className="absolute right-48 bottom-1/4 w-48 h-48 rounded-2xl overflow-hidden shadow-2xl hidden lg:block"
+          className="absolute right-52 bottom-1/4 w-48 h-64 rounded-2xl overflow-hidden shadow-2xl hidden lg:block"
+          style={{ zIndex: 2 }}
         >
           <img
             src="https://images.pexels.com/photos/7578795/pexels-photo-7578795.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
             alt="Medical Technology"
             className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </motion.div>
         
         {/* Main Content */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32" style={{ zIndex: 3 }}>
           <div className="max-w-3xl">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -140,10 +144,10 @@ export default function Landing() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.7 }}
-              className="text-5xl md:text-7xl font-bold text-gray-900 leading-tight mb-8"
+              className="text-5xl md:text-7xl font-bold leading-tight mb-8"
             >
-              Your Health Records,
-              <span className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="text-gray-900">Your Health Records,</span>
+              <span className="block mt-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Secured Forever
               </span>
             </motion.h1>
@@ -152,7 +156,7 @@ export default function Landing() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.9 }}
-              className="text-xl md:text-2xl text-gray-600 leading-relaxed mb-12"
+              className="text-xl md:text-2xl text-gray-800 leading-relaxed mb-12 max-w-2xl"
             >
               Experience the future of medical record management. Store, access, and share your health documents securely from anywhere in the world.
             </motion.p>
@@ -161,7 +165,7 @@ export default function Landing() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 1.2 }}
-              className="flex items-center text-gray-500"
+              className="flex items-center text-gray-600 font-medium"
             >
               <ArrowRight className="w-5 h-5 mr-2 animate-bounce" />
               <span>Scroll to explore</span>
@@ -174,7 +178,7 @@ export default function Landing() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 1 }}
-          className="absolute right-0 bottom-0 w-96 h-96 bg-gradient-to-t from-primary/20 to-transparent rounded-full blur-3xl"
+          className="absolute -right-48 bottom-0 w-96 h-96 bg-gradient-to-t from-primary/10 to-transparent rounded-full blur-3xl"
         />
       </section>
 
