@@ -69,3 +69,10 @@
 .leaflet-control-container .leaflet-control {
   border-radius: 0.5rem;
 }
+
+/* Full-screen map styles */
+.map-fullscreen {
+  height: calc(100vh - 12rem);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
