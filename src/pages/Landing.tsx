@@ -80,60 +80,72 @@ export default function Landing() {
     window.scrollTo(0, 0)
   }, [])
 
-  const handleGetStarted = () => {
-    navigate('/register')
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
       <Navbar showAuthButtons={true} />
       
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-5" />
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+        <div className="absolute inset-0">
+          <motion.div 
+            initial={{ scale: 1.1, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="absolute inset-0 bg-[url('https://images.pexels.com/photos/3846035/pexels-photo-3846035.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent" />
+        </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+          <div className="max-w-3xl">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="text-sm font-semibold text-primary mb-8 tracking-wider"
             >
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                Secure, Unified Medical Records — Anytime, Anywhere
-              </h1>
-              <p className="text-xl text-gray-600 mb-8">
-                MediVault lets you store, manage, and share your medical records safely in one place.
-              </p>
-              <div className="flex justify-center">
-                <motion.button
-                  onClick={handleGetStarted}
-                  className="bg-primary text-white px-8 py-4 rounded-xl font-medium text-lg
-                           hover:bg-primary/90 transition-colors inline-flex items-center
-                           hover:shadow-lg w-full sm:w-auto justify-center"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Get Started Now
-                  <ArrowRight className="w-6 h-6 ml-2" />
-                </motion.button>
-              </div>
+              WELCOME TO MEDIVAULT
             </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
+
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="text-5xl md:text-7xl font-bold text-gray-900 leading-tight mb-8"
             >
-              <img
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80"
-                alt="Digital Health Records"
-                className="rounded-2xl shadow-2xl w-full"
-              />
+              Your Health Records,
+              <span className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Secured Forever
+              </span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.9 }}
+              className="text-xl md:text-2xl text-gray-600 leading-relaxed mb-12"
+            >
+              Experience the future of medical record management. Store, access, and share your health documents securely from anywhere in the world.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1.2 }}
+              className="flex items-center text-gray-500"
+            >
+              <ArrowRight className="w-5 h-5 mr-2 animate-bounce" />
+              <span>Scroll to explore</span>
             </motion.div>
           </div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="absolute right-0 bottom-0 w-96 h-96 bg-gradient-to-t from-primary/20 to-transparent rounded-full blur-3xl"
+        />
       </section>
 
       {/* Features Section */}
@@ -230,7 +242,7 @@ export default function Landing() {
 
             <FadeInWhenVisible delay={0.2}>
               <img
-                src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80"
+                src="https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
                 alt="Medical Professional using MediVault"
                 className="rounded-2xl shadow-2xl w-full"
               />
@@ -244,7 +256,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInWhenVisible>
             <div className="card bg-gradient-to-r from-primary to-secondary text-white overflow-hidden relative">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10" />
+              <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/3846035/pexels-photo-3846035.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center opacity-10" />
               <div className="relative text-center">
                 <h2 className="text-3xl font-bold mb-4">
                   Ready to Take Control of Your Medical Records?
@@ -253,7 +265,7 @@ export default function Landing() {
                   Join thousands of users who trust MediVault with their health information
                 </p>
                 <motion.button
-                  onClick={handleGetStarted}
+                  onClick={() => navigate('/register')}
                   className="bg-white text-primary px-8 py-4 rounded-xl font-medium 
                            hover:bg-gray-100 transition-colors inline-flex items-center
                            hover:shadow-lg"
