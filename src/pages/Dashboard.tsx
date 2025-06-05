@@ -10,7 +10,6 @@ import {
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import PageTransition from '../components/PageTransition'
-import MapCard from '../components/MapCard'
 import { useAuth } from '../context/AuthContext'
 import { getDashboardStats, getRecentActivity, getExtendedProfile } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
@@ -312,11 +311,6 @@ export default function Dashboard() {
                     {healthTips[currentTipIndex].description}
                   </p>
                 </motion.div>
-              </div>
-
-              {/* Map Card */}
-              <div className="mt-6">
-                <MapCard />
               </div>
             </motion.div>
           </div>
