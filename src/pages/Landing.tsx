@@ -89,19 +89,50 @@ export default function Landing() {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-5" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-center max-w-3xl"
+              className="relative z-10"
             >
+              <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+              <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                Secure, Unified Medical Records — Anytime, Anywhere
+                Your Health Records,{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                  Secured
+                </span>{' '}
+                and{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
+                  Accessible
+                </span>
               </h1>
-              <p className="text-xl text-gray-600">
+              <p className="text-xl text-gray-600 relative">
                 MediVault lets you store, manage, and share your medical records safely in one place.
+                Take control of your health journey with our secure digital platform.
               </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl transform rotate-3" />
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-3xl transform -rotate-3" />
+              <img
+                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80"
+                alt="Digital Health Records"
+                className="relative rounded-3xl shadow-2xl w-full transform hover:scale-[1.02] transition-transform duration-300"
+              />
+              <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl shadow-xl p-4 transform hover:scale-105 transition-transform duration-300">
+                <div className="flex items-center space-x-2">
+                  <Shield className="w-6 h-6 text-primary" />
+                  <span className="text-sm font-medium text-gray-900">Bank-Level Security</span>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
