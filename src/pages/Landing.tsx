@@ -86,6 +86,7 @@ export default function Landing() {
       
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+        {/* Main Background Image */}
         <div className="absolute inset-0">
           <motion.div 
             initial={{ scale: 1.1, opacity: 0 }}
@@ -95,7 +96,35 @@ export default function Landing() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent" />
         </div>
+
+        {/* Floating Images */}
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="absolute right-10 top-1/4 w-64 h-64 rounded-2xl overflow-hidden shadow-2xl hidden lg:block"
+        >
+          <img
+            src="https://images.pexels.com/photos/7579831/pexels-photo-7579831.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+            alt="Digital Healthcare"
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.8 }}
+          className="absolute right-48 bottom-1/4 w-48 h-48 rounded-2xl overflow-hidden shadow-2xl hidden lg:block"
+        >
+          <img
+            src="https://images.pexels.com/photos/7578795/pexels-photo-7578795.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+            alt="Medical Technology"
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
         
+        {/* Main Content */}
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
           <div className="max-w-3xl">
             <motion.div
@@ -140,6 +169,7 @@ export default function Landing() {
           </div>
         </div>
 
+        {/* Decorative Elements */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
