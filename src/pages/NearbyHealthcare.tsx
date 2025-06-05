@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  ArrowLeft, MapPin, Cross, Pill, Building2, ChevronDown, 
+  ArrowLeft, MapPin, Guitar as Hospital, Pill, Building2, ChevronDown, 
   X, Navigation, ExternalLink, AlertTriangle 
 } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
@@ -29,7 +29,7 @@ interface Place {
 
 const placeTypes = [
   { id: 'all', label: 'Show All', icon: MapPin },
-  { id: 'hospital', label: 'Hospitals', icon: Cross },
+  { id: 'hospital', label: 'Hospitals', icon: Hospital },
   { id: 'clinic', label: 'Clinics', icon: Building2 },
   { id: 'pharmacy', label: 'Pharmacies', icon: Pill }
 ]
