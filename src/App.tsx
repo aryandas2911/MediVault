@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Landing from './pages/Landing';
@@ -18,6 +18,28 @@ import Privacy from './pages/Privacy';
 import NearbyHealthcare from './pages/NearbyHealthcare';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { useAuth } from './context/AuthContext';
+import LoadingSpinner from './components/LoadingSpinner';
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const { session, loading } = useAuth();
+  
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+  
+  return session ? children : <Navigate to="/login" replace />;
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { session, loading } = useAuth();
+  
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+  
+  return !session ? children : <Navigate to="/dashboard" replace />;
+}
 
 function App() {
   return (
@@ -28,20 +50,60 @@ function App() {
             <Navbar />
             <main className="flex-grow">
               <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/records" element={<Records />} />
-                <Route path="/records/add" element={<AddRecord />} />
-                <Route path="/records/edit/:id" element={<EditRecord />} />
-                <Route path="/share" element={<Share />} />
-                <Route path="/shared" element={<SharedRecords />} />
+                <Route path="/" element={
+                  <PublicRoute>
+                    <Landing />
+                  </PublicRoute>
+                } />
+                <Route path="/login" element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                } />
+                <Route path="/register" element={
+                  <PublicRoute>
+                    <Register />
+                  </PublicRoute>
+                } />
+                <Route path="/dashboard" element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                } />
+                <Route path="/profile" element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                } />
+                <Route path="/records" element={
+                  <PrivateRoute>
+                    <Records />
+                  </PrivateRoute>
+                } />
+                <Route path="/add-record" element={
+                  <PrivateRoute>
+                    <AddRecord />
+                  </PrivateRoute>
+                } />
+                <Route path="/edit-record/:id" element={
+                  <PrivateRoute>
+                    <EditRecord />
+                  </PrivateRoute>
+                } />
+                <Route path="/share" element={
+                  <PrivateRoute>
+                    <Share />
+                  </PrivateRoute>
+                } />
+                <Route path="/shared/:id" element={<SharedRecords />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/privacy" element={<Privacy />} />
-                <Route path="/nearby-healthcare" element={<NearbyHealthcare />} />
+                <Route path="/nearby-healthcare" element={
+                  <PrivateRoute>
+                    <NearbyHealthcare />
+                  </PrivateRoute>
+                } />
               </Routes>
             </main>
             <Footer />
