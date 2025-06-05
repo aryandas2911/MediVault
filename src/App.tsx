@@ -14,7 +14,6 @@ import About from './pages/About'
 import Privacy from './pages/Privacy'
 import Contact from './pages/Contact'
 import Profile from './pages/Profile'
-import NearbyHealthcare from './pages/NearbyHealthcare'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoadingSpinner from './components/LoadingSpinner'
 
@@ -140,14 +139,6 @@ export default function App() {
               element={
                 <PrivateRoute>
                   <Profile />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/nearby-healthcare"
-              element={
-                <PrivateRoute>
-                  <NearbyHealthcare />
                 </PrivateRoute>
               }
             />
