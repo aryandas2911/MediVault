@@ -22,8 +22,8 @@ import { ThemeProvider } from './context/ThemeContext';
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <Router>
+      <Router>
+        <AuthProvider>
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-grow">
@@ -46,8 +46,8 @@ function App() {
             </main>
             <Footer />
           </div>
-        </Router>
-      </AuthProvider>
+        </AuthProvider>
+      </Router>
     </ThemeProvider>
   );
 }
