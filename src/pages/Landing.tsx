@@ -150,7 +150,7 @@ export default function Landing() {
                 className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/3]"
               >
                 <img
-                  src="https://images.pexels.com/photos/3846035/pexels-photo-3846035.jpeg?auto=compress&cs=tinysrgb&w=1920"
+                  src="https://images.pexels.com/photos/3846035/pexels-photo-3846035.jpeg"
                   alt="Digital Healthcare"
                   className="w-full h-full object-cover"
                 />
@@ -258,7 +258,7 @@ export default function Landing() {
 
             <FadeInWhenVisible delay={0.2}>
               <img
-                src="https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                src="https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg"
                 alt="Medical Professional using MediVault"
                 className="rounded-2xl shadow-2xl w-full"
               />
@@ -272,7 +272,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInWhenVisible>
             <div className="card bg-gradient-to-r from-primary to-secondary text-white overflow-hidden relative">
-              <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/3846035/pexels-photo-3846035.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center opacity-10" />
+              <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/3846035/pexels-photo-3846035.jpeg')] bg-cover bg-center opacity-10" />
               <div className="relative text-center">
                 <h2 className="text-3xl font-bold mb-4">
                   Ready to Take Control of Your Medical Records?
