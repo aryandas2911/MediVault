@@ -1,12 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { Loader } from '@googlemaps/js-api-loader'
 import { 
   AlertTriangle, FileText, Share2, Info,
   Clock, ChevronRight, PlusCircle, Files,
-  Plus, ArrowRight, MapPin, Navigation
+  Plus, ArrowRight
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -14,8 +13,6 @@ import PageTransition from '../components/PageTransition'
 import { useAuth } from '../context/AuthContext'
 import { getDashboardStats, getRecentActivity, getExtendedProfile } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
-
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
 
 const healthTips = [
   {
@@ -93,15 +90,11 @@ export default function Dashboard() {
   const [recentActivity, setRecentActivity] = useState<MedicalRecord[]>([])
   const [currentTipIndex, setCurrentTipIndex] = useState(0)
   const [userName, setUserName] = useState<string>('User')
-  const mapRef = useRef<HTMLDivElement>(null)
-  const [nearbyPlaces, setNearbyPlaces] = useState<google.maps.places.PlaceResult[]>([])
-  const [locationError, setLocationError] = useState('')
 
   useEffect(() => {
     if (session?.user.id) {
       loadDashboardData()
       loadUserProfile()
-      initMap()
     }
   }, [session])
 
@@ -135,91 +128,6 @@ export default function Dashboard() {
       console.error('Error loading dashboard data:', error)
     }
   }
-
-  const initMap = useCallback(async () => {
-    if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by your browser')
-      return
-    }
-
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      try {
-        const loader = new Loader({
-          apiKey: GOOGLE_MAPS_API_KEY,
-          version: 'weekly',
-          libraries: ['places']
-        })
-
-        const { Map } = await loader.importLibrary('maps')
-        const { PlacesService } = await loader.importLibrary('places')
-
-        const currentLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        }
-
-        const mapInstance = new Map(mapRef.current!, {
-          center: currentLocation,
-          zoom: 14,
-          disableDefaultUI: true,
-          styles: [
-            {
-              featureType: 'poi',
-              elementType: 'labels',
-              stylers: [{ visibility: 'off' }]
-            }
-          ]
-        })
-
-        // Add current location marker
-        new google.maps.Marker({
-          position: currentLocation,
-          map: mapInstance,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 8,
-            fillColor: '#1A73E8',
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 2
-          }
-        })
-
-        // Search for nearby hospitals
-        const service = new PlacesService(mapInstance)
-        service.nearbySearch({
-          location: currentLocation,
-          radius: 3000,
-          type: 'hospital'
-        }, (results, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-            setNearbyPlaces(results.slice(0, 3))
-            
-            // Add markers for nearby hospitals
-            results.slice(0, 3).forEach(place => {
-              if (place.geometry?.location) {
-                new google.maps.Marker({
-                  position: place.geometry.location,
-                  map: mapInstance,
-                  title: place.name,
-                  icon: {
-                    url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                    scaledSize: new google.maps.Size(32, 32)
-                  }
-                })
-              }
-            })
-          }
-        })
-      } catch (error) {
-        console.error('Error initializing map:', error)
-        setLocationError('Failed to load map')
-      }
-    }, (error) => {
-      console.error('Error getting location:', error)
-      setLocationError('Failed to get your location')
-    })
-  }, [])
 
   const statCards = [
     {
@@ -379,14 +287,12 @@ export default function Dashboard() {
               </div>
             </motion.div>
 
-            {/* Health Tips and Map */}
+            {/* Health Tips */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="space-y-6"
             >
-              {/* Health Tips Card */}
               <div className="card bg-gradient-to-br from-blue-50 to-purple-50">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
                   Health Tips
@@ -405,56 +311,6 @@ export default function Dashboard() {
                     {healthTips[currentTipIndex].description}
                   </p>
                 </motion.div>
-              </div>
-
-              {/* Nearby Healthcare Centers */}
-              <div className="card">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center">
-                    <MapPin className="w-5 h-5 text-primary mr-2" />
-                    <h2 className="text-xl font-semibold text-gray-900">
-                      Nearby Healthcare Centers
-                    </h2>
-                  </div>
-                </div>
-
-                {locationError ? (
-                  <div className="text-center py-6">
-                    <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-                    <p className="text-gray-600">{locationError}</p>
-                  </div>
-                ) : (
-                  <>
-                    <div 
-                      ref={mapRef} 
-                      className="w-full h-[250px] rounded-xl overflow-hidden mb-4"
-                    />
-                    
-                    <div className="space-y-3 mb-4">
-                      {nearbyPlaces.map((place, index) => (
-                        <div key={place.place_id} className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <Navigation className="w-4 h-4 text-primary mr-2" />
-                            <span className="text-sm text-gray-600">{place.name}</span>
-                          </div>
-                          <span className="text-sm text-gray-500">
-                            {place.vicinity}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <motion.button
-                      onClick={() => navigate('/nearby-healthcare')}
-                      className="btn-primary w-full flex items-center justify-center"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      View Full Map
-                      <ChevronRight className="w-5 h-5 ml-2" />
-                    </motion.button>
-                  </>
-                )}
               </div>
             </motion.div>
           </div>
