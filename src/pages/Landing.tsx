@@ -80,6 +80,10 @@ export default function Landing() {
     window.scrollTo(0, 0)
   }, [])
 
+  const handleGetStarted = () => {
+    navigate('/register')
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-white">
       <Navbar showAuthButtons={true} />
@@ -91,48 +95,42 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="relative z-10"
             >
-              <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-              <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                Your Health Records,{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-                  Secured
-                </span>{' '}
-                and{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
-                  Accessible
-                </span>
+                Secure, Unified Medical Records — Anytime, Anywhere
               </h1>
-              <p className="text-xl text-gray-600 relative">
+              <p className="text-xl text-gray-600 mb-8">
                 MediVault lets you store, manage, and share your medical records safely in one place.
-                Take control of your health journey with our secure digital platform.
               </p>
+              <div className="flex justify-center">
+                <motion.button
+                  onClick={handleGetStarted}
+                  className="bg-primary text-white px-8 py-4 rounded-xl font-medium text-lg
+                           hover:bg-primary/90 transition-colors inline-flex items-center
+                           hover:shadow-lg w-full sm:w-auto justify-center"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Get Started Now
+                  <ArrowRight className="w-6 h-6 ml-2" />
+                </motion.button>
+              </div>
             </motion.div>
             
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="relative"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl transform rotate-3" />
-              <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-3xl transform -rotate-3" />
               <img
                 src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80"
                 alt="Digital Health Records"
-                className="relative rounded-3xl shadow-2xl w-full transform hover:scale-[1.02] transition-transform duration-300"
+                className="rounded-2xl shadow-2xl w-full"
               />
-              <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl shadow-xl p-4 transform hover:scale-105 transition-transform duration-300">
-                <div className="flex items-center space-x-2">
-                  <Shield className="w-6 h-6 text-primary" />
-                  <span className="text-sm font-medium text-gray-900">Bank-Level Security</span>
-                </div>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -251,9 +249,20 @@ export default function Landing() {
                 <h2 className="text-3xl font-bold mb-4">
                   Ready to Take Control of Your Medical Records?
                 </h2>
-                <p className="text-xl opacity-90">
+                <p className="text-xl opacity-90 mb-8">
                   Join thousands of users who trust MediVault with their health information
                 </p>
+                <motion.button
+                  onClick={handleGetStarted}
+                  className="bg-white text-primary px-8 py-4 rounded-xl font-medium 
+                           hover:bg-gray-100 transition-colors inline-flex items-center
+                           hover:shadow-lg"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Get Started Now
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </motion.button>
               </div>
             </div>
           </FadeInWhenVisible>

@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ArrowLeft, MapPin, Cross, Pill, Building2, ChevronDown, 
-  X, Navigation, ExternalLink, AlertTriangle, Star, MapPin as LocationPin
+  X, Navigation, ExternalLink, AlertTriangle 
 } from 'lucide-react'
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -13,6 +13,7 @@ import PageTransition from '../components/PageTransition'
 import toast from 'react-hot-toast'
 
 type PlaceType = 'all' | 'hospital' | 'clinic' | 'pharmacy'
+type MapTheme = 'default' | 'dark' | 'light'
 
 interface Place {
   id: string
@@ -22,7 +23,6 @@ interface Place {
   tags: {
     name?: string
     amenity: string
-    rating?: string
     [key: string]: string | undefined
   }
 }
@@ -33,6 +33,12 @@ const placeTypes = [
   { id: 'clinic', label: 'Clinics', icon: Building2 },
   { id: 'pharmacy', label: 'Pharmacies', icon: Pill }
 ]
+
+const mapThemes = {
+  default: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+  light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+}
 
 // Custom marker icons
 const createIcon = (color: string) => new L.Icon({
@@ -48,54 +54,31 @@ const icons = {
   hospital: createIcon('red'),
   clinic: createIcon('blue'),
   pharmacy: createIcon('green'),
-  user: createIcon('gold'),
   default: createIcon('blue')
 }
 
-function LocationButton({ onClick }: { onClick: () => void }) {
+function MapThemeControl({ theme, onChange }: { theme: MapTheme, onChange: (theme: MapTheme) => void }) {
   return (
-    <motion.button
-      onClick={onClick}
-      className="absolute top-4 right-4 z-[1000] bg-white rounded-lg shadow-lg px-4 py-2
-                 hover:shadow-xl transition-shadow duration-300 group"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      title="Center on My Location"
-    >
-      <LocationPin className="w-5 h-5 text-primary group-hover:text-primary/80" />
-      <div className="absolute invisible group-hover:visible bg-gray-800 text-white text-sm
-                    py-1 px-2 rounded -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-        Center on My Location
-      </div>
-    </motion.button>
-  )
-}
-
-function MapEvents({ onLocationFound }: { onLocationFound: (coords: [number, number]) => void }) {
-  const map = useMapEvents({
-    locationfound(e) {
-      onLocationFound([e.latlng.lat, e.latlng.lng])
-      map.flyTo(e.latlng, map.getZoom())
-    }
-  })
-  return null
-}
-
-function StarRating({ rating }: { rating: string }) {
-  const numRating = parseFloat(rating)
-  return (
-    <div className="flex items-center space-x-1">
-      {[...Array(5)].map((_, i) => (
-        <Star
-          key={i}
-          className={`w-4 h-4 ${
-            i < numRating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-          }`}
-        />
-      ))}
-      <span className="ml-1 text-sm text-gray-600">{rating}</span>
+    <div className="absolute top-4 right-4 z-[1000]">
+      <select
+        value={theme}
+        onChange={(e) => onChange(e.target.value as MapTheme)}
+        className="bg-white rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm"
+      >
+        <option value="default">Default Theme</option>
+        <option value="dark">Dark Theme</option>
+        <option value="light">Light Theme</option>
+      </select>
     </div>
   )
+}
+
+function ZoomToMarker({ position }: { position: [number, number] }) {
+  const map = useMap()
+  useEffect(() => {
+    map.setView(position, 16)
+  }, [map, position])
+  return null
 }
 
 export default function NearbyHealthcare() {
@@ -106,41 +89,8 @@ export default function NearbyHealthcare() {
   const [error, setError] = useState('')
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const [showSidebar, setShowSidebar] = useState(true)
+  const [mapTheme, setMapTheme] = useState<MapTheme>('default')
   const [selectedPlace, setSelectedPlace] = useState<string | null>(null)
-
-  const loadNearbyPlaces = async (latitude: number, longitude: number) => {
-    try {
-      const query = `
-        [out:json];
-        (
-          node(around:2000,${latitude},${longitude})[amenity=hospital];
-          node(around:2000,${latitude},${longitude})[amenity=clinic];
-          node(around:2000,${latitude},${longitude})[amenity=doctors];
-          node(around:2000,${latitude},${longitude})[amenity=pharmacy];
-        );
-        out;
-      `
-      const response = await fetch('https://overpass-api.de/api/interpreter', {
-        method: 'POST',
-        body: `data=${encodeURIComponent(query)}`
-      })
-      
-      if (!response.ok) throw new Error('Failed to fetch places')
-      
-      const data = await response.json()
-      const placesWithDistance = data.elements.map((place: Place) => ({
-        ...place,
-        distance: calculateDistance(latitude, longitude, place.lat, place.lon)
-      }))
-      setPlaces(placesWithDistance)
-    } catch (error) {
-      console.error('Error fetching places:', error)
-      toast.error('Failed to load nearby healthcare centers')
-      setError('Failed to load nearby places')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -150,10 +100,41 @@ export default function NearbyHealthcare() {
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords
         setUserLocation([latitude, longitude])
-        loadNearbyPlaces(latitude, longitude)
+        
+        try {
+          const query = `
+            [out:json];
+            (
+              node(around:2000,${latitude},${longitude})[amenity=hospital];
+              node(around:2000,${latitude},${longitude})[amenity=clinic];
+              node(around:2000,${latitude},${longitude})[amenity=doctors];
+              node(around:2000,${latitude},${longitude})[amenity=pharmacy];
+            );
+            out;
+          `
+          const response = await fetch('https://overpass-api.de/api/interpreter', {
+            method: 'POST',
+            body: `data=${encodeURIComponent(query)}`
+          })
+          
+          if (!response.ok) throw new Error('Failed to fetch places')
+          
+          const data = await response.json()
+          const placesWithDistance = data.elements.map((place: Place) => ({
+            ...place,
+            distance: calculateDistance(latitude, longitude, place.lat, place.lon)
+          }))
+          setPlaces(placesWithDistance)
+        } catch (error) {
+          console.error('Error fetching places:', error)
+          toast.error('Failed to load nearby healthcare centers')
+          setError('Failed to load nearby places')
+        } finally {
+          setLoading(false)
+        }
       },
       (error) => {
         console.error('Error getting location:', error)
@@ -177,24 +158,11 @@ export default function NearbyHealthcare() {
     return d < 1 ? `${Math.round(d * 1000)}m` : `${d.toFixed(1)}km`
   }
 
-  const getDirectionsUrl = (place: Place) => {
-    if (!userLocation) return ''
-    return `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${userLocation[0]}%2C${userLocation[1]}%3B${place.lat}%2C${place.lon}`
-  }
-
   const getIcon = (amenity: string) => {
     if (amenity === 'hospital') return icons.hospital
     if (amenity === 'clinic' || amenity === 'doctors') return icons.clinic
     if (amenity === 'pharmacy') return icons.pharmacy
     return icons.default
-  }
-
-  const handleLocateMe = () => {
-    if (!userLocation) return
-    const map = document.querySelector('.leaflet-container')?.__vue__?._map
-    if (map) {
-      map.setView(userLocation, 15)
-    }
   }
 
   const filteredPlaces = places.filter(place => {
@@ -269,9 +237,10 @@ export default function NearbyHealthcare() {
               ))}
             </div>
           </motion.div>
-          
-          {/* Map Section */}
+
+          {/* Main Content */}
           <div className="relative grid lg:grid-cols-3 gap-6">
+            {/* Map */}
             <div className="lg:col-span-2">
               {error ? (
                 <div className="text-center py-12 bg-red-50 rounded-xl">
@@ -279,7 +248,9 @@ export default function NearbyHealthcare() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     Location Access Required
                   </h3>
-                  <p className="text-gray-600">{error}</p>
+                  <p className="text-gray-600">
+                    {error}
+                  </p>
                 </div>
               ) : loading ? (
                 <div className="flex items-center justify-center py-12">
@@ -303,14 +274,14 @@ export default function NearbyHealthcare() {
                   >
                     <TileLayer
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      url={mapThemes[mapTheme]}
                     />
                     
-                    <LocationButton onClick={handleLocateMe} />
-                    <MapEvents onLocationFound={coords => setUserLocation(coords)} />
-
                     {/* User location marker */}
-                    <Marker position={userLocation} icon={icons.user}>
+                    <Marker
+                      position={userLocation}
+                      icon={createIcon('blue')}
+                    >
                       <Popup>
                         <div className="font-medium">You are here</div>
                       </Popup>
@@ -324,36 +295,46 @@ export default function NearbyHealthcare() {
                         icon={getIcon(place.tags.amenity)}
                       >
                         <Popup>
-                          <div className="p-2">
-                            <div className="font-medium text-lg mb-1">
-                              {place.tags.name || place.tags.amenity}
-                            </div>
-                            <div className="text-sm text-gray-600 mb-2">
-                              {place.tags.amenity.charAt(0).toUpperCase() + place.tags.amenity.slice(1)}
-                            </div>
-                            {place.tags.rating && (
-                              <StarRating rating={place.tags.rating} />
-                            )}
-                            <div className="text-sm text-primary mt-2">
-                              {place.distance} away
-                            </div>
-                            <a
-                              href={getDirectionsUrl(place)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="mt-3 inline-flex items-center px-3 py-1.5 text-sm font-medium
-                                       text-white bg-gradient-to-r from-primary to-secondary
-                                       rounded-lg hover:from-primary/90 hover:to-secondary/90
-                                       transition-colors shadow-sm hover:shadow-md"
-                            >
-                              Get Directions
-                              <ExternalLink className="w-4 h-4 ml-1.5" />
-                            </a>
+                          <div className="font-medium">
+                            {place.tags.name || place.tags.amenity}
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">
+                            {place.tags.amenity.charAt(0).toUpperCase() + place.tags.amenity.slice(1)}
+                          </div>
+                          <div className="text-sm text-primary mt-1">
+                            {place.distance} away
                           </div>
                         </Popup>
                       </Marker>
                     ))}
+
+                    {selectedPlace && (
+                      <ZoomToMarker 
+                        position={[
+                          places.find(p => p.id === selectedPlace)?.lat || userLocation[0],
+                          places.find(p => p.id === selectedPlace)?.lon || userLocation[1]
+                        ]} 
+                      />
+                    )}
                   </MapContainer>
+
+                  <MapThemeControl theme={mapTheme} onChange={setMapTheme} />
+
+                  {/* Mobile Toggle Sidebar Button */}
+                  <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="lg:hidden absolute bottom-4 right-4 p-3 bg-white rounded-full shadow-lg"
+                    onClick={() => setShowSidebar(!showSidebar)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {showSidebar ? (
+                      <X className="w-6 h-6 text-gray-600" />
+                    ) : (
+                      <Navigation className="w-6 h-6 text-primary" />
+                    )}
+                  </motion.button>
                 </motion.div>
               ) : null}
             </div>
@@ -407,11 +388,6 @@ export default function NearbyHealthcare() {
                             <h3 className="font-medium text-gray-900">
                               {place.tags.name || place.tags.amenity}
                             </h3>
-                            {place.tags.rating && (
-                              <div className="mt-1">
-                                <StarRating rating={place.tags.rating} />
-                              </div>
-                            )}
                             <div className="flex items-center justify-between mt-2">
                               <span className="text-sm text-primary">
                                 {place.distance}
@@ -426,7 +402,7 @@ export default function NearbyHealthcare() {
                                 </span>
                               )}
                             </div>
-                            <div className="flex items-center justify-between mt-3">
+                            <div className="flex items-center justify-between mt-2">
                               <motion.button
                                 onClick={(e) => {
                                   e.stopPropagation()
@@ -437,23 +413,8 @@ export default function NearbyHealthcare() {
                                 whileTap={{ scale: 0.95 }}
                               >
                                 View on Map
-                                <MapPin className="w-4 h-4 ml-1.5" />
+                                <ExternalLink className="w-4 h-4 ml-1" />
                               </motion.button>
-                              <motion.a
-                                href={getDirectionsUrl(place)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-sm flex items-center px-3 py-1.5 text-white
-                                         bg-gradient-to-r from-primary to-secondary rounded-lg
-                                         hover:from-primary/90 hover:to-secondary/90 transition-colors
-                                         shadow-sm hover:shadow-md"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                              >
-                                Get Directions
-                                <ExternalLink className="w-4 h-4 ml-1.5" />
-                              </motion.a>
                             </div>
                           </motion.div>
                         ))}
