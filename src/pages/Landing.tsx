@@ -4,8 +4,7 @@ import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
 import { 
   Shield, QrCode, FileText, ChevronRight, 
-  Upload, Share2, Clock, CheckCircle, ArrowRight,
-  LogIn, UserPlus
+  Upload, Share2, Clock, CheckCircle, ArrowRight
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 
@@ -90,51 +89,19 @@ export default function Landing() {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-5" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="flex items-center justify-center min-h-[60vh]">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
+              className="text-center max-w-3xl"
             >
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
                 Secure, Unified Medical Records — Anytime, Anywhere
               </h1>
-              <p className="text-xl text-gray-600 mb-8">
+              <p className="text-xl text-gray-600">
                 MediVault lets you store, manage, and share your medical records safely in one place.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <motion.button
-                  onClick={() => navigate('/register')}
-                  className="btn-primary flex items-center justify-center group"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <UserPlus className="w-5 h-5 mr-2" />
-                  Create Free Account
-                </motion.button>
-                <motion.button
-                  onClick={() => navigate('/login')}
-                  className="btn-secondary flex items-center justify-center group"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <LogIn className="w-5 h-5 mr-2" />
-                  Sign In
-                </motion.button>
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80"
-                alt="Digital Health Records"
-                className="rounded-2xl shadow-2xl w-full"
-              />
             </motion.div>
           </div>
         </div>
@@ -253,33 +220,9 @@ export default function Landing() {
                 <h2 className="text-3xl font-bold mb-4">
                   Ready to Take Control of Your Medical Records?
                 </h2>
-                <p className="text-xl opacity-90 mb-8">
+                <p className="text-xl opacity-90">
                   Join thousands of users who trust MediVault with their health information
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <motion.button
-                    onClick={() => navigate('/register')}
-                    className="bg-white text-primary px-6 py-3 rounded-xl font-medium 
-                             hover:bg-gray-100 transition-colors inline-flex items-center
-                             hover:shadow-lg"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <UserPlus className="w-5 h-5 mr-2" />
-                    Create Free Account
-                  </motion.button>
-                  <motion.button
-                    onClick={() => navigate('/login')}
-                    className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-xl 
-                             font-medium hover:bg-white/20 transition-colors inline-flex items-center
-                             hover:shadow-lg"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <LogIn className="w-5 h-5 mr-2" />
-                    Sign In
-                  </motion.button>
-                </div>
               </div>
             </div>
           </FadeInWhenVisible>
