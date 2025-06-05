@@ -50,7 +50,7 @@ function App() {
             <Navbar />
             <main className="flex-grow">
               <Routes>
-                <Route path="/" element={
+                <Route path="/\" element={
                   <PublicRoute>
                     <Landing />
                   </PublicRoute>
