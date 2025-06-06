@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
-import { createUserProfile, getUserProfile } from '../lib/supabase'
+import { createUserProfile, getUserProfile, updateExtendedProfile } from '../lib/supabase'
 import type { UserProfile } from '../types/database'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
@@ -10,7 +10,7 @@ interface AuthContextType {
   session: Session | null
   userProfile: UserProfile | null
   loading: boolean
-  signUp: (email: string, password: string, fullName: string) => Promise<void>
+  signUp: (email: string, password: string, fullName: string, additionalData?: Partial<UserProfile>) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, additionalData?: Partial<UserProfile>) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -75,16 +75,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       if (error) throw error
 
-      if (data.user) {
-        const profile = await createUserProfile({
+      if (data.user && data.session) {
+        // Create the user profile with the authenticated session
+        const profileData: Partial<UserProfile> = {
           id: data.user.id,
           full_name: fullName,
-          date_of_birth: null,
-          gender: '',
-          phone_number: '',
-          blood_group: '',
-          address: ''
-        })
+          date_of_birth: additionalData?.date_of_birth || null,
+          gender: additionalData?.gender || null,
+          phone_number: additionalData?.phone_number || null,
+          blood_group: additionalData?.blood_group || null,
+          address: additionalData?.address || null
+        }
+
+        const profile = await createUserProfile(profileData)
         setUserProfile(profile)
         
         // Enhanced email confirmation notification

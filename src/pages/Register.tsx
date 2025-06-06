@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { Eye, EyeOff, Mail, Lock, User, Calendar, Droplets, MapPin, Phone } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
+import toast from 'react-hot-toast';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -23,14 +23,14 @@ export default function Register() {
   const [rateLimitError, setRateLimitError] = useState(false);
   const [rateLimitSeconds, setRateLimitSeconds] = useState(0);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { session, signUp } = useAuth();
 
   // Redirect if already logged in
   React.useEffect(() => {
-    if (user) {
+    if (session) {
       navigate('/dashboard');
     }
-  }, [user, navigate]);
+  }, [session, navigate]);
 
   // Rate limit countdown timer
   React.useEffect(() => {
@@ -94,76 +94,23 @@ export default function Register() {
     setError('');
 
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            full_name: formData.fullName,
-          }
-        }
-      });
-
-      if (signUpError) {
-        // Check for rate limit error
-        if (signUpError.message.includes('rate_limit') || signUpError.message.includes('after') || signUpError.status === 429) {
-          const match = signUpError.message.match(/after (\d+) seconds/);
-          const seconds = match ? parseInt(match[1]) : 60;
-          setRateLimitSeconds(seconds);
-          setRateLimitError(true);
-          setError('');
-        } else {
-          setError(signUpError.message);
-        }
-        return;
-      }
-
-      if (data.user) {
-        // Create user profile
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: data.user.id,
-              email: formData.email,
-              full_name: formData.fullName,
-              date_of_birth: formData.dateOfBirth || null,
-              blood_group: formData.bloodGroup || null,
-            }
-          ]);
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-        }
-
-        // Create extended user profile
-        const { error: extendedProfileError } = await supabase
-          .from('user_profiles')
-          .insert([
-            {
-              id: data.user.id,
-              full_name: formData.fullName,
-              date_of_birth: formData.dateOfBirth || null,
-              blood_group: formData.bloodGroup || null,
-              address: formData.address || null,
-              phone_number: formData.phoneNumber || null,
-            }
-          ]);
-
-        if (extendedProfileError) {
-          console.error('Extended profile creation error:', extendedProfileError);
-        }
-
-        navigate('/dashboard');
-      }
+      // Use the centralized signUp function from AuthContext
+      await signUp(formData.email, formData.password, formData.fullName || 'User');
+      
+      // The AuthContext signUp function handles profile creation
+      // Navigate to dashboard on success
+      navigate('/dashboard');
     } catch (err: any) {
-      // Handle network errors or other exceptions
-      if (err.status === 429 || (err.message && err.message.includes('rate_limit'))) {
-        setRateLimitSeconds(60); // Default to 60 seconds if we can't parse the exact time
+      // Handle rate limit errors
+      if (err.message && (err.message.includes('rate_limit') || err.message.includes('after') || err.status === 429)) {
+        const match = err.message.match(/after (\d+) seconds/);
+        const seconds = match ? parseInt(match[1]) : 60;
+        setRateLimitSeconds(seconds);
         setRateLimitError(true);
         setError('');
       } else {
-        setError('An unexpected error occurred. Please try again.');
+        // Handle other errors
+        setError(err.message || 'An unexpected error occurred. Please try again.');
       }
     } finally {
       setLoading(false);
