@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AlertTriangle, FileText, Download, Clock, Guitar as Hospital, User, Calendar, Shield, Info } from 'lucide-react'
+import { AlertTriangle, FileText, Download, Clock, Building2, User, Calendar, Shield, Info } from 'lucide-react'
 import { supabase, getSignedFileUrl } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
 import Footer from '../components/Footer'
@@ -251,7 +251,7 @@ export default function SharedRecords() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {record.hospital_name && (
                     <div className="flex items-center text-gray-600">
-                      <Hospital className="w-5 h-5 mr-2 text-gray-400" />
+                      <Building2 className="w-5 h-5 mr-2 text-gray-400" />
                       <span>{record.hospital_name}</span>
                     </div>
                   )}
