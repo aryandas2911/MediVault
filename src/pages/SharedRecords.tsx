@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AlertTriangle, FileText, Download, Clock, Guitar as Hospital, User, Calendar, Shield, Info } from 'lucide-react'
+import { AlertTriangle, FileText, Download, Clock, Hospital, User, Calendar, Shield, Info } from 'lucide-react'
 import { supabase, getSignedFileUrl } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
 import Footer from '../components/Footer'
@@ -46,22 +46,60 @@ export default function SharedRecords() {
   useEffect(() => {
     if (id) {
       loadRecords()
+    } else {
+      setError('Invalid share link')
+      setLoading(false)
     }
   }, [id])
 
   const loadRecords = async () => {
     try {
-      const recordIds = id?.split(',') || []
+      // Validate and parse record IDs
+      const recordIds = id?.split(',').filter(Boolean) || []
+      
+      if (recordIds.length === 0) {
+        throw new Error('No valid record IDs found')
+      }
+
+      // Validate UUID format for security
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      const validIds = recordIds.filter(id => uuidRegex.test(id))
+      
+      if (validIds.length === 0) {
+        throw new Error('Invalid record format')
+      }
+
+      // Optimized query with specific field selection
       const { data, error: fetchError } = await supabase
         .from('medical_records')
-        .select('*')
-        .in('id', recordIds)
+        .select(`
+          id,
+          title,
+          type,
+          description,
+          hospital_name,
+          doctor_name,
+          consultation_date,
+          is_emergency,
+          file_url,
+          created_at
+        `)
+        .in('id', validIds)
+        .order('created_at', { ascending: false })
       
-      if (fetchError) throw fetchError
-      setRecords(data || [])
-    } catch (error) {
-      setError('Failed to load shared records')
-      console.error(error)
+      if (fetchError) {
+        console.error('Database error:', fetchError)
+        throw new Error('Failed to fetch records')
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error('Records not found or access expired')
+      }
+
+      setRecords(data)
+    } catch (error: any) {
+      console.error('Error loading records:', error)
+      setError(error.message || 'Failed to load shared records')
     } finally {
       setLoading(false)
     }
@@ -71,11 +109,18 @@ export default function SharedRecords() {
     if (!record.file_url) return
     
     try {
+      toast.loading('Preparing download...', { id: 'download' })
+      
       const signedUrl = await getSignedFileUrl(record.file_url)
       
       // Create a temporary anchor element to trigger download
       const link = document.createElement('a')
       const response = await fetch(signedUrl)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch file')
+      }
+      
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       link.href = url
@@ -85,10 +130,10 @@ export default function SharedRecords() {
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
       
-      toast.success('File downloaded successfully')
+      toast.success('File downloaded successfully', { id: 'download' })
     } catch (error) {
-      toast.error('Failed to download file')
-      console.error(error)
+      console.error('Download error:', error)
+      toast.error('Failed to download file', { id: 'download' })
     }
   }
 
@@ -104,7 +149,7 @@ export default function SharedRecords() {
       condition: 'bg-purple-100 text-purple-800',
       report: 'bg-green-100 text-green-800'
     }
-    return colors[type as keyof typeof colors]
+    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800'
   }
 
   const getTypeGradient = (type: string) => {
@@ -114,19 +159,15 @@ export default function SharedRecords() {
       condition: 'from-purple-50 to-purple-100/50',
       report: 'from-green-50 to-green-100/50'
     }
-    return gradients[type as keyof typeof gradients]
+    return gradients[type as keyof typeof gradients] || 'from-gray-50 to-gray-100/50'
   }
 
   if (loading) {
     return <LoadingSpinner />
   }
 
-  if (error || records.length === 0) {
-    return (
-      <ErrorState 
-        message={error || 'No records found or link has expired'} 
-      />
-    )
+  if (error) {
+    return <ErrorState message={error} />
   }
 
   return (
@@ -146,7 +187,7 @@ export default function SharedRecords() {
             Shared Medical Records
           </h1>
           <p className="text-gray-600">
-            View-only access to selected medical records
+            View-only access to {records.length} medical record{records.length !== 1 ? 's' : ''}
           </p>
         </motion.div>
 
@@ -179,7 +220,7 @@ export default function SharedRecords() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`card bg-gradient-to-br ${getTypeGradient(record.type)}`}
+                className={`card bg-gradient-to-br ${getTypeGradient(record.type)} hover:shadow-lg transition-all duration-300`}
               >
                 <div className="flex items-start justify-between mb-6">
                   <div>
@@ -227,14 +268,17 @@ export default function SharedRecords() {
                   <div className="flex items-center text-gray-500">
                     <Calendar className="w-4 h-4 mr-2" />
                     <span className="text-sm">
-                      {record.consultation_date ? new Date(record.consultation_date).toLocaleDateString() : 'No date specified'}
+                      {record.consultation_date 
+                        ? new Date(record.consultation_date).toLocaleDateString()
+                        : 'No date specified'
+                      }
                     </span>
                   </div>
 
                   {record.file_url && (
                     <motion.button
                       onClick={() => handleFileDownload(record)}
-                      className="flex items-center text-primary hover:text-primary/90 bg-white px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center text-primary hover:text-primary/90 bg-white px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
