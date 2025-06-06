@@ -153,16 +153,26 @@ export const updateMedicalRecord = async (id: string, record: Partial<MedicalRec
 
 
 export const deleteMedicalRecord = async (id: string) => {
-  return supabase.from('medical_records').delete().eq('id', id)
-}
+  try {
+    if (!id) throw new Error('Invalid medical record ID')
 
-    
-    if (error) throw error
+    const { data, error } = await supabase
+      .from('medical_records')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error('Error deleting medical record:', error)
+      throw error
+    }
+
+    return data
   } catch (error) {
     console.error('Error deleting medical record:', error)
     throw error
   }
 }
+
 
 // Dashboard statistics
 export const getDashboardStats = async (userId: string) => {
