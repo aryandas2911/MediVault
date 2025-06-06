@@ -11,7 +11,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import PageTransition from '../components/PageTransition'
 import { useAuth } from '../context/AuthContext'
-import { getDashboardStats, getRecentActivity, getExtendedProfile } from '../lib/supabase'
+import { getDashboardStats, getRecentActivity, getUserProfile } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
 
 const healthTips = [
@@ -107,7 +107,7 @@ export default function Dashboard() {
 
   const loadUserProfile = async () => {
     try {
-      const profile = await getExtendedProfile(session!.user.id)
+      const profile = await getUserProfile(session!.user.id)
       if (profile?.full_name) {
         setUserName(profile.full_name)
       }

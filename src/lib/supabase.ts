@@ -57,29 +57,6 @@ export const getUserProfile = async (userId: string) => {
   }
 }
 
-// Profile operations
-export const getExtendedProfile = async (userId: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-    
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // No rows found - this is expected for new users
-        return null
-      }
-      throw error
-    }
-    return data as UserProfile | null
-  } catch (error) {
-    console.error('Error getting extended profile:', error)
-    throw error
-  }
-}
-
 export const updateExtendedProfile = async (userId: string, profile: Partial<UserProfile>) => {
   try {
     const { data, error } = await supabase

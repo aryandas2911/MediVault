@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
 import PageTransition from '../components/PageTransition'
 import { useAuth } from '../context/AuthContext'
-import { getExtendedProfile, updateExtendedProfile } from '../lib/supabase'
+import { getUserProfile, updateExtendedProfile } from '../lib/supabase'
 import type { UserProfile } from '../types/database'
 import Footer from '../components/Footer'
 
@@ -76,7 +76,7 @@ export default function Profile() {
 
   const loadProfile = async () => {
     try {
-      const data = await getExtendedProfile(session!.user.id)
+      const data = await getUserProfile(session!.user.id)
       if (data) {
         setProfile({
           full_name: data.full_name || '',
