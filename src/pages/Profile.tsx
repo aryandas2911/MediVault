@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Save, User, Calendar, Phone, MapPin, Activity, ChevronRight, Mail, Shield, Clock, AlertTriangle } from 'lucide-react'
+import { Save, User, Calendar, Phone, MapPin, Activity, ChevronRight, Mail, Shield, Clock } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
 import PageTransition from '../components/PageTransition'
@@ -68,9 +68,6 @@ export default function Profile() {
     address: ''
   })
 
-  // Check if email is confirmed
-  const isEmailConfirmed = session?.user.email_confirmed_at !== null
-
   useEffect(() => {
     if (session?.user.id) {
       loadProfile()
@@ -102,24 +99,9 @@ export default function Profile() {
     e.preventDefault()
     if (!session?.user.id) return
 
-    if (!isEmailConfirmed) {
-      toast.error('Please confirm your email address before updating your profile')
-      return
-    }
-
     setSaving(true)
     try {
-      // Convert empty strings to null for nullable fields
-      const sanitizedProfile = {
-        ...profile,
-        date_of_birth: profile.date_of_birth === '' ? null : profile.date_of_birth,
-        gender: profile.gender === '' ? null : profile.gender,
-        phone_number: profile.phone_number === '' ? null : profile.phone_number,
-        blood_group: profile.blood_group === '' ? null : profile.blood_group,
-        address: profile.address === '' ? null : profile.address
-      }
-
-      await updateExtendedProfile(session.user.id, sanitizedProfile)
+      await updateExtendedProfile(session.user.id, profile)
       toast.success('Profile updated successfully')
     } catch (error) {
       console.error('Error updating profile:', error)
@@ -167,9 +149,7 @@ export default function Profile() {
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between text-gray-600">
                     <span>Email Verified</span>
-                    <span className={isEmailConfirmed ? "text-green-600" : "text-orange-600"}>
-                      {isEmailConfirmed ? "✓" : "Pending"}
-                    </span>
+                    <span className="text-green-600">✓</span>
                   </div>
                   <div className="flex items-center justify-between text-gray-600">
                     <span>Last Updated</span>
@@ -219,28 +199,6 @@ export default function Profile() {
                   Personal Information
                 </h2>
 
-                {/* Email Confirmation Warning */}
-                {!isEmailConfirmed && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg"
-                  >
-                    <div className="flex items-start">
-                      <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5 mr-3 flex-shrink-0" />
-                      <div>
-                        <h3 className="text-sm font-medium text-orange-800">
-                          Email Confirmation Required
-                        </h3>
-                        <p className="text-sm text-orange-700 mt-1">
-                          Please check your email and confirm your account before updating your profile. 
-                          You won't be able to save changes until your email is verified.
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
                 {loading ? (
                   <ProfileSkeleton />
                 ) : (
@@ -259,7 +217,6 @@ export default function Profile() {
                             onChange={(e) => setProfile(prev => ({ ...prev, full_name: e.target.value }))}
                             className="input-field pl-10"
                             placeholder="John Doe"
-                            disabled={!isEmailConfirmed}
                           />
                         </div>
                       </div>
@@ -290,7 +247,6 @@ export default function Profile() {
                             value={profile.date_of_birth || ''}
                             onChange={(e) => setProfile(prev => ({ ...prev, date_of_birth: e.target.value }))}
                             className="input-field pl-10"
-                            disabled={!isEmailConfirmed}
                           />
                         </div>
                       </div>
@@ -303,7 +259,6 @@ export default function Profile() {
                           value={profile.gender || ''}
                           onChange={(e) => setProfile(prev => ({ ...prev, gender: e.target.value }))}
                           className="input-field"
-                          disabled={!isEmailConfirmed}
                         >
                           <option value="">Select gender</option>
                           <option value="male">Male</option>
@@ -325,7 +280,6 @@ export default function Profile() {
                             onChange={(e) => setProfile(prev => ({ ...prev, phone_number: e.target.value }))}
                             className="input-field pl-10"
                             placeholder="+1 (555) 000-0000"
-                            disabled={!isEmailConfirmed}
                           />
                         </div>
                       </div>
@@ -340,7 +294,6 @@ export default function Profile() {
                             value={profile.blood_group || ''}
                             onChange={(e) => setProfile(prev => ({ ...prev, blood_group: e.target.value }))}
                             className="input-field pl-10"
-                            disabled={!isEmailConfirmed}
                           >
                             <option value="">Select blood group</option>
                             <option value="A+">A+</option>
@@ -367,7 +320,6 @@ export default function Profile() {
                             rows={3}
                             className="input-field pl-10"
                             placeholder="Enter your address"
-                            disabled={!isEmailConfirmed}
                           />
                         </div>
                       </div>
@@ -376,12 +328,10 @@ export default function Profile() {
                     <div className="flex flex-col sm:flex-row gap-4">
                       <motion.button
                         type="submit"
-                        disabled={saving || !isEmailConfirmed}
-                        className={`btn-primary flex-1 flex items-center justify-center relative overflow-hidden ${
-                          !isEmailConfirmed ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                        whileHover={isEmailConfirmed ? { scale: 1.02 } : {}}
-                        whileTap={isEmailConfirmed ? { scale: 0.98 } : {}}
+                        disabled={saving}
+                        className="btn-primary flex-1 flex items-center justify-center relative overflow-hidden"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
                         <AnimatePresence mode="wait">
                           {saving ? (
@@ -403,7 +353,7 @@ export default function Profile() {
                               className="flex items-center"
                             >
                               <Save className="w-5 h-5 mr-2" />
-                              {isEmailConfirmed ? 'Save Changes' : 'Confirm Email First'}
+                              Save Changes
                             </motion.div>
                           )}
                         </AnimatePresence>

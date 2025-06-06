@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
-import { createUserProfile, getUserProfile, updateExtendedProfile } from '../lib/supabase'
+import { createUserProfile, getUserProfile } from '../lib/supabase'
 import type { UserProfile } from '../types/database'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
@@ -10,7 +10,7 @@ interface AuthContextType {
   session: Session | null
   userProfile: UserProfile | null
   loading: boolean
-  signUp: (email: string, password: string, fullName: string, additionalData?: Partial<UserProfile>) => Promise<void>
+  signUp: (email: string, password: string, fullName: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
@@ -27,14 +27,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(currentSession)
     
     if (currentSession?.user) {
-      // Check if email is confirmed before attempting to create/fetch profile
-      if (!currentSession.user.email_confirmed_at) {
-        // Email not confirmed yet, defer profile creation
-        setUserProfile(null)
-        setLoading(false)
-        return
-      }
-
       try {
         let profile = await getUserProfile(currentSession.user.id)
         
@@ -70,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = async (email: string, password: string, fullName: string, additionalData?: Partial<UserProfile>) => {
+  const signUp = async (email: string, password: string, fullName: string) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -83,23 +75,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       if (error) throw error
 
-      // Enhanced email confirmation notification
-      toast.success(
-        `Account created successfully! 📧\nPlease check your email (${email}) for a confirmation link to activate your account.`,
-        {
-          duration: 8000,
-          style: {
-            background: '#10B981',
-            color: '#fff',
-            borderRadius: '12px',
-            padding: '16px',
-            fontSize: '14px',
-            lineHeight: '1.5',
-            maxWidth: '400px'
-          },
-          icon: '✉️'
-        }
-      )
+      if (data.user) {
+        const profile = await createUserProfile({
+          id: data.user.id,
+          full_name: fullName,
+          date_of_birth: null,
+          gender: '',
+          phone_number: '',
+          blood_group: '',
+          address: ''
+        })
+        setUserProfile(profile)
+        toast.success('Account created successfully! Please check your email for confirmation.')
+      }
     } catch (error) {
       toast.error('Failed to create account')
       throw error
@@ -114,22 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       if (error) {
         if (error.message === 'Email not confirmed') {
-          toast.error(
-            'Please confirm your email address before logging in. Check your inbox for the confirmation link.',
-            {
-              duration: 6000,
-              style: {
-                background: '#EF4444',
-                color: '#fff',
-                borderRadius: '12px',
-                padding: '16px',
-                fontSize: '14px',
-                lineHeight: '1.5',
-                maxWidth: '400px'
-              },
-              icon: '📧'
-            }
-          )
+          toast.error('Please confirm your email address before logging in. Check your inbox for the confirmation link.')
         } else {
           toast.error('Invalid login credentials')
         }

@@ -64,10 +64,16 @@ export const getExtendedProfile = async (userId: string) => {
       .from('user_profiles')
       .select('*')
       .eq('id', userId)
-      .limit(1)
+      .single()
     
-    if (error) throw error
-    return data?.[0] || null
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No rows found - this is expected for new users
+        return null
+      }
+      throw error
+    }
+    return data as UserProfile | null
   } catch (error) {
     console.error('Error getting extended profile:', error)
     throw error

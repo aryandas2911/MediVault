@@ -1,399 +1,207 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Eye, EyeOff, Mail, Lock, User, Calendar, Droplets, MapPin, Phone } from 'lucide-react';
-import LoadingSpinner from '../components/LoadingSpinner';
-import toast from 'react-hot-toast';
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Mail, Lock, UserPlus, AlertCircle, User } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    fullName: '',
-    dateOfBirth: '',
-    bloodGroup: '',
-    address: '',
-    phoneNumber: ''
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [rateLimitError, setRateLimitError] = useState(false);
-  const [rateLimitSeconds, setRateLimitSeconds] = useState(0);
-  const navigate = useNavigate();
-  const { session, signUp } = useAuth();
-
-  // Redirect if already logged in
-  React.useEffect(() => {
-    if (session) {
-      navigate('/dashboard');
-    }
-  }, [session, navigate]);
-
-  // Rate limit countdown timer
-  React.useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (rateLimitError && rateLimitSeconds > 0) {
-      interval = setInterval(() => {
-        setRateLimitSeconds(prev => {
-          if (prev <= 1) {
-            setRateLimitError(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [rateLimitError, rateLimitSeconds]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    // Clear errors when user starts typing
-    if (error) setError('');
-    if (rateLimitError) setRateLimitError(false);
-  };
-
-  const validateForm = () => {
-    if (!formData.email || !formData.password || !formData.confirmPassword) {
-      setError('Please fill in all required fields');
-      return false;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return false;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
-      return false;
-    }
-
-    return true;
-  };
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { signUp } = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
+    setError('')
+    setIsSubmitting(true)
     
-    if (!validateForm()) return;
-    if (rateLimitError) return;
-
-    setLoading(true);
-    setError('');
-
     try {
-      // Use the centralized signUp function from AuthContext
-      await signUp(formData.email, formData.password, formData.fullName || 'User');
-      
-      // The AuthContext signUp function handles profile creation
-      // Navigate to dashboard on success
-      navigate('/dashboard');
-    } catch (err: any) {
-      // Handle rate limit errors
-      if (err.message && (err.message.includes('rate_limit') || err.message.includes('after') || err.status === 429)) {
-        const match = err.message.match(/after (\d+) seconds/);
-        const seconds = match ? parseInt(match[1]) : 60;
-        setRateLimitSeconds(seconds);
-        setRateLimitError(true);
-        setError('');
-      } else {
-        // Handle other errors
-        setError(err.message || 'An unexpected error occurred. Please try again.');
-      }
+      await signUp(email, password, fullName)
+      navigate('/profile')
+    } catch (error) {
+      setError('Error creating account')
     } finally {
-      setLoading(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-blue-600 rounded-xl flex items-center justify-center">
-            <User className="h-6 w-6 text-white" />
+    <div className="min-h-screen grid lg:grid-cols-2">
+      {/* Image Panel */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="hidden lg:block relative"
+      >
+        <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')] bg-cover bg-center" />
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary/90 to-primary/90 mix-blend-multiply" />
+        <div className="absolute inset-0 flex items-center justify-center p-12">
+          <div className="max-w-xl text-white">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="text-4xl font-bold mb-6"
+            >
+              Join MediVault Today
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.8 }}
+              className="text-lg opacity-90"
+            >
+              Create your account to start managing your medical records securely in one place.
+            </motion.p>
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">Create your account</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Join MediVault to securely manage your medical records
-          </p>
         </div>
+      </motion.div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address *
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+      {/* Form Panel */}
+      <div className="flex items-center justify-center p-8 bg-gradient-to-br from-[#F0F4FF] to-white">
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="w-full max-w-md"
+        >
+          {/* Mobile Logo - Only visible on mobile */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-8 lg:hidden"
+          >
+            <h1 className="text-3xl font-bold text-gray-900">MediVault</h1>
+            <p className="mt-2 text-gray-600">Create your account</p>
+          </motion.div>
+
+          <div className="card backdrop-blur-sm bg-white/80">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Create your account
+            </h2>
+            <p className="text-gray-600 mb-8">
+              Join MediVault to manage your medical records
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <AnimatePresence mode="wait">
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="p-3 rounded-lg bg-red-50 text-red-600 flex items-center text-sm"
+                  >
+                    <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                    {error}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      id="fullName"
+                      type="text"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="input-field pl-10"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
                 </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your email"
-                />
-              </div>
-            </div>
 
-            {/* Full Name */}
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      id="email"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="input-field pl-10"
+                      placeholder="Enter your email"
+                    />
+                  </div>
                 </div>
-                <input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your full name"
-                />
-              </div>
-            </div>
 
-            {/* Date of Birth */}
-            <div>
-              <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
-                Date of Birth
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Calendar className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="dateOfBirth"
-                  name="dateOfBirth"
-                  type="date"
-                  value={formData.dateOfBirth}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            {/* Blood Group */}
-            <div>
-              <label htmlFor="bloodGroup" className="block text-sm font-medium text-gray-700 mb-1">
-                Blood Group
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Droplets className="h-5 w-5 text-gray-400" />
-                </div>
-                <select
-                  id="bloodGroup"
-                  name="bloodGroup"
-                  value={formData.bloodGroup}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select blood group</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Phone Number */}
-            <div>
-              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="tel"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-            </div>
-
-            {/* Address */}
-            <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MapPin className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="address"
-                  name="address"
-                  type="text"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your address"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password *
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Create a password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Confirm Password */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password *
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Confirm your password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Error Messages */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
-
-          {/* Rate Limit Error */}
-          {rateLimitError && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800">
-                    Rate limit exceeded
-                  </h3>
-                  <div className="mt-2 text-sm text-yellow-700">
-                    <p>
-                      Too many signup attempts. Please wait {rateLimitSeconds} seconds before trying again.
-                    </p>
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      id="password"
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="input-field pl-10"
+                      placeholder="Create a password"
+                    />
                   </div>
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Submit Button */}
-          <div>
-            <button
-              type="submit"
-              disabled={loading || rateLimitError}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white transition-colors duration-200 ${
-                loading || rateLimitError
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
-              }`}
-            >
-              {loading ? (
-                <LoadingSpinner size="sm" />
-              ) : rateLimitError ? (
-                `Wait ${rateLimitSeconds}s`
-              ) : (
-                'Create Account'
-              )}
-            </button>
-          </div>
+              <motion.button
+                type="submit"
+                disabled={isSubmitting}
+                className="btn-primary relative"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <AnimatePresence mode="wait">
+                  {isSubmitting ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 flex items-center justify-center bg-inherit"
+                    >
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="button"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex items-center justify-center"
+                    >
+                      <UserPlus className="w-5 h-5 mr-2" />
+                      Create Account
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">
-                Sign in here
-              </Link>
-            </p>
+              <p className="text-center text-sm text-gray-600">
+                Already have an account?{' '}
+                <Link to="/login" className="text-primary hover:text-primary/90 font-medium">
+                  Sign in
+                </Link>
+              </p>
+            </form>
           </div>
-        </form>
+        </motion.div>
       </div>
     </div>
-  );
+  )
 }
