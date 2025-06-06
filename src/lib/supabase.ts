@@ -124,20 +124,33 @@ export const getMedicalRecord = async (id: string) => {
 
 export const updateMedicalRecord = async (id: string, record: Partial<MedicalRecord>) => {
   try {
+    // Step 1: Validate ID parameter
+    if (!id) throw new Error('Invalid medical record id')
+
+    // Step 2: Remove undefined fields from the update object
+    const cleanRecord = Object.fromEntries(
+      Object.entries(record).filter(([_, v]) => v !== undefined)
+    )
+
     const { data, error } = await supabase
       .from('medical_records')
-      .update(record)
+      .update(cleanRecord)
       .eq('id', id)
       .select()
       .single()
-    
-    if (error) throw error
+
+    if (error) {
+      console.error('Supabase update error:', error)
+      throw error
+    }
+
     return data
   } catch (error) {
     console.error('Error updating medical record:', error)
     throw error
   }
 }
+
 
 export const deleteMedicalRecord = async (id: string) => {
   try {

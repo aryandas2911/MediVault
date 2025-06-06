@@ -95,24 +95,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      if (error) {
-        if (error.message === 'Email not confirmed') {
-          toast.error('Please confirm your email address before logging in. Check your inbox for the confirmation link.')
-        } else {
-          toast.error('Invalid login credentials')
-        }
-        throw error
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      if (error.message === 'Email not confirmed') {
+        toast.error('Please confirm your email address before logging in. Check your inbox for the confirmation link.')
+      } else {
+        toast.error('Invalid login credentials')
       }
-      toast.success('Welcome back!')
-    } catch (error) {
       throw error
     }
+
+    if (data?.user) {
+      let profile = await getUserProfile(data.user.id)
+      if (!profile) {
+        profile = await createUserProfile({
+          id: data.user.id,
+          full_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User',
+          date_of_birth: null,
+          gender: '',
+          phone_number: '',
+          blood_group: '',
+          address: ''
+        })
+      }
+      setUserProfile(profile)
+    }
+
+    toast.success('Welcome back!')
+  } catch (error) {
+    throw error
   }
+}
+
 
   const signOut = async () => {
     try {
