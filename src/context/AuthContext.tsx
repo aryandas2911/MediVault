@@ -2,13 +2,13 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { createUserProfile, getUserProfile } from '../lib/supabase'
-import type { User } from '../types/database'
+import type { UserProfile } from '../types/database'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 interface AuthContextType {
   session: Session | null
-  userProfile: User | null
+  userProfile: UserProfile | null
   loading: boolean
   signUp: (email: string, password: string, fullName: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
-  const [userProfile, setUserProfile] = useState<User | null>(null)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -33,7 +33,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!profile) {
           profile = await createUserProfile({
             id: currentSession.user.id,
-            email: currentSession.user.email!,
             full_name: currentSession.user.user_metadata?.full_name || currentSession.user.email?.split('@')[0] || 'User'
           })
         }
@@ -77,8 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error
 
       if (data.user) {
-        // Create initial user profile
-        await supabase.from('user_profiles').insert({
+        const profile = await createUserProfile({
           id: data.user.id,
           full_name: fullName,
           date_of_birth: null,
@@ -86,12 +84,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           phone_number: '',
           blood_group: '',
           address: ''
-        })
-
-        const profile = await createUserProfile({
-          id: data.user.id,
-          email: data.user.email!,
-          full_name: fullName
         })
         setUserProfile(profile)
         toast.success('Account created successfully! Please check your email for confirmation.')
