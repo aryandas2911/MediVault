@@ -86,7 +86,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           address: ''
         })
         setUserProfile(profile)
-        toast.success('Account created successfully! Please check your email for confirmation.')
+        
+        // Enhanced email confirmation notification
+        toast.success(
+          `Account created successfully! 📧\nPlease check your email (${email}) for a confirmation link to activate your account.`,
+          {
+            duration: 8000,
+            style: {
+              background: '#10B981',
+              color: '#fff',
+              borderRadius: '12px',
+              padding: '16px',
+              fontSize: '14px',
+              lineHeight: '1.5',
+              maxWidth: '400px'
+            },
+            icon: '✉️'
+          }
+        )
       }
     } catch (error) {
       toast.error('Failed to create account')
@@ -102,7 +119,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       if (error) {
         if (error.message === 'Email not confirmed') {
-          toast.error('Please confirm your email address before logging in. Check your inbox for the confirmation link.')
+          toast.error(
+            'Please confirm your email address before logging in. Check your inbox for the confirmation link.',
+            {
+              duration: 6000,
+              style: {
+                background: '#EF4444',
+                color: '#fff',
+                borderRadius: '12px',
+                padding: '16px',
+                fontSize: '14px',
+                lineHeight: '1.5',
+                maxWidth: '400px'
+              },
+              icon: '📧'
+            }
+          )
         } else {
           toast.error('Invalid login credentials')
         }
