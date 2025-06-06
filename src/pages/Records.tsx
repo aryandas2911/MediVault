@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { getMedicalRecords, deleteMedicalRecord, deleteFile, getSignedFileUrl } from '../lib/supabase'
+import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import type { MedicalRecord, MedicalRecordType } from '../types/database'
 
