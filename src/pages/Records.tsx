@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from 'lib/supabase.ts'
+import { supabase } from '..lib/supabase.ts'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle, FileText, Pencil, Search, Filter, Calendar, ChevronRight, PlusCircle, Trash2, ChevronDown, Building2 as Hospital, User, Clock, X, Download, Eye } from 'lucide-react'
