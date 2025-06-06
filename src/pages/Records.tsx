@@ -60,20 +60,43 @@ export default function Records() {
   }
 
   const handleDelete = async (record: MedicalRecord) => {
-    try {
-      await deleteMedicalRecord(record.id)
-      if (record.file_url) {
-        await deleteFile(record.file_url)
-      }
-      setRecords(prev => prev.filter(r => r.id !== record.id))
-      toast.success('Record deleted successfully')
-    } catch (error) {
-      toast.error('Failed to delete record')
-      console.error(error)
-    } finally {
-      setDeleteConfirm(null)
+  try {
+    // 1. Delete the record from the Supabase table
+    const { error: dbError } = await supabase
+      .from('medical_records') // make sure this is your exact table name
+      .delete()
+      .eq('id', record.id)
+
+    if (dbError) {
+      console.error('Database delete error:', dbError)
+      toast.error('Failed to delete record from database')
+      return
     }
+
+    // 2. Delete the file from Supabase Storage if it exists
+    if (record.file_url) {
+      const { error: storageError } = await supabase
+        .storage
+        .from('medical_files') // replace with your actual bucket name
+        .remove([record.file_url])
+
+      if (storageError) {
+        console.error('Storage delete error:', storageError)
+        toast.error('Record deleted, but failed to delete attached file')
+      }
+    }
+
+    // 3. Update UI state
+    setRecords(prev => prev.filter(r => r.id !== record.id))
+    toast.success('Record deleted successfully')
+  } catch (error) {
+    toast.error('Unexpected error while deleting')
+    console.error(error)
+  } finally {
+    setDeleteConfirm(null)
   }
+}
+
 
   const handleFileAction = async (record: MedicalRecord, action: 'view' | 'download') => {
     if (!record.file_url) return
