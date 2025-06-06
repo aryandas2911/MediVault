@@ -27,6 +27,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(currentSession)
     
     if (currentSession?.user) {
+      // Check if email is confirmed before attempting to create/fetch profile
+      if (!currentSession.user.email_confirmed_at) {
+        // Email not confirmed yet, defer profile creation
+        setUserProfile(null)
+        setLoading(false)
+        return
+      }
+
       try {
         let profile = await getUserProfile(currentSession.user.id)
         
