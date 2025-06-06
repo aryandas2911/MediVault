@@ -75,39 +75,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       if (error) throw error
 
-      if (data.user && data.session) {
-        // Create the user profile with the authenticated session
-        const profileData: Partial<UserProfile> = {
-          id: data.user.id,
-          full_name: fullName,
-          date_of_birth: additionalData?.date_of_birth || null,
-          gender: additionalData?.gender || null,
-          phone_number: additionalData?.phone_number || null,
-          blood_group: additionalData?.blood_group || null,
-          address: additionalData?.address || null
+      // Enhanced email confirmation notification
+      toast.success(
+        `Account created successfully! 📧\nPlease check your email (${email}) for a confirmation link to activate your account.`,
+        {
+          duration: 8000,
+          style: {
+            background: '#10B981',
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '16px',
+            fontSize: '14px',
+            lineHeight: '1.5',
+            maxWidth: '400px'
+          },
+          icon: '✉️'
         }
-
-        const profile = await createUserProfile(profileData)
-        setUserProfile(profile)
-        
-        // Enhanced email confirmation notification
-        toast.success(
-          `Account created successfully! 📧\nPlease check your email (${email}) for a confirmation link to activate your account.`,
-          {
-            duration: 8000,
-            style: {
-              background: '#10B981',
-              color: '#fff',
-              borderRadius: '12px',
-              padding: '16px',
-              fontSize: '14px',
-              lineHeight: '1.5',
-              maxWidth: '400px'
-            },
-            icon: '✉️'
-          }
-        )
-      }
+      )
     } catch (error) {
       toast.error('Failed to create account')
       throw error

@@ -101,7 +101,17 @@ export default function Profile() {
 
     setSaving(true)
     try {
-      await updateExtendedProfile(session.user.id, profile)
+      // Convert empty strings to null for nullable fields
+      const sanitizedProfile = {
+        ...profile,
+        date_of_birth: profile.date_of_birth === '' ? null : profile.date_of_birth,
+        gender: profile.gender === '' ? null : profile.gender,
+        phone_number: profile.phone_number === '' ? null : profile.phone_number,
+        blood_group: profile.blood_group === '' ? null : profile.blood_group,
+        address: profile.address === '' ? null : profile.address
+      }
+
+      await updateExtendedProfile(session.user.id, sanitizedProfile)
       toast.success('Profile updated successfully')
     } catch (error) {
       console.error('Error updating profile:', error)
