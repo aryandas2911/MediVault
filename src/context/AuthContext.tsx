@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { createUserProfile, getUserProfile } from '../lib/supabase'
 import type { UserProfile } from '../types/database'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 interface AuthContextType {
   session: Session | null
@@ -20,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   const handleSession = async (currentSession: Session | null) => {
     setSession(currentSession)
@@ -107,8 +109,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error
       }
       toast.success('Welcome back!')
-      // Navigation will be handled by the PrivateRoute component
-      // when the session state updates
     } catch (error) {
       throw error
     }
@@ -119,6 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signOut()
       if (error) throw error
       setUserProfile(null)
+      navigate('/')
       toast.success('Logged out successfully')
     } catch (error) {
       toast.error('Failed to log out')
