@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AlertTriangle, FileText, Download, Clock, Hospital, User, Calendar, Shield, Info } from 'lucide-react'
+import { AlertTriangle, FileText, Download, Clock, Guitar as Hospital, User, Calendar, Shield, Info } from 'lucide-react'
 import { supabase, getSignedFileUrl } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
 import Footer from '../components/Footer'
