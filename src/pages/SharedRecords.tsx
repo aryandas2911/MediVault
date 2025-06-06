@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AlertTriangle, FileText, Download, Clock, Guitar as Hospital, User, Calendar, Shield, Info } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { AlertTriangle, FileText, Download, Clock, Hospital, User, Calendar, Shield, Info } from 'lucide-react'
+import { supabase, getSignedFileUrl } from '../lib/supabase'
 import type { MedicalRecord } from '../types/database'
 import Footer from '../components/Footer'
+import toast from 'react-hot-toast'
 
 function LoadingSpinner() {
   return (
@@ -64,6 +65,36 @@ export default function SharedRecords() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleFileDownload = async (record: MedicalRecord) => {
+    if (!record.file_url) return
+    
+    try {
+      const signedUrl = await getSignedFileUrl(record.file_url)
+      
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement('a')
+      const response = await fetch(signedUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      link.href = url
+      link.download = `${record.title}${getFileExtension(record.file_url)}`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+      
+      toast.success('File downloaded successfully')
+    } catch (error) {
+      toast.error('Failed to download file')
+      console.error(error)
+    }
+  }
+
+  const getFileExtension = (url: string): string => {
+    const extension = url.split('.').pop()
+    return extension ? `.${extension}` : ''
   }
 
   const getTypeColor = (type: string) => {
@@ -196,22 +227,20 @@ export default function SharedRecords() {
                   <div className="flex items-center text-gray-500">
                     <Calendar className="w-4 h-4 mr-2" />
                     <span className="text-sm">
-                      {new Date(record.consultation_date).toLocaleDateString()}
+                      {record.consultation_date ? new Date(record.consultation_date).toLocaleDateString() : 'No date specified'}
                     </span>
                   </div>
 
                   {record.file_url && (
-                    <motion.a
-                      href={record.file_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center text-primary hover:text-primary/90"
+                    <motion.button
+                      onClick={() => handleFileDownload(record)}
+                      className="flex items-center text-primary hover:text-primary/90 bg-white px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Download File
-                    </motion.a>
+                    </motion.button>
                   )}
                 </div>
               </motion.div>
