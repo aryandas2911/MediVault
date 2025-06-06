@@ -19,6 +19,7 @@ export default function Login() {
     
     try {
       await signIn(email, password)
+      // Navigate to dashboard after successful sign in
       navigate('/dashboard')
     } catch (error) {
       setError('Invalid login credentials')
