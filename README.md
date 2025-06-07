@@ -9,7 +9,6 @@ MediVault is a clean, AI-generated web app that empowers patients to take contro
 
 ## 📸 Screenshots
 
-_Add relevant screenshots below to show the UI and key features._
 
 > ![Landing Page](Landing.png)  
 > _Landing Page Interface_
