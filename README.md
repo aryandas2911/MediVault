@@ -4,7 +4,6 @@
 
 MediVault is a clean, AI-generated web app that empowers patients to take control of their health records. Users can upload, edit, and manage their medical data, and share it via secure QR codes. The project uses **React**, **Supabase**, and **Tailwind CSS** — all generated with **Bolt AI**.
 
-> ⚠️ **Note:** This project is under development and may have some functional issues. We welcome the community to contribute via pull and push requests!
 
 ---
 
