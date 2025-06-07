@@ -76,16 +76,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error
 
       if (data.user) {
-        const profile = await createUserProfile({
-          id: data.user.id,
-          full_name: fullName,
-          date_of_birth: null,
-          gender: '',
-          phone_number: '',
-          blood_group: '',
-          address: ''
-        })
-        setUserProfile(profile)
         toast.success('Account created successfully! Please check your email for confirmation.')
       }
     } catch (error) {

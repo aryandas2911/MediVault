@@ -29,9 +29,9 @@ export const createUserProfile = async (userData: Partial<UserProfile>) => {
   try {
     const { data, error } = await supabase
       .from('user_profiles')
-      .insert([userData])
+      .upsert([userData], { onConflict: 'id' })
       .select()
-      .single()
+      .limit(1)
     
     if (error) throw error
     return data
